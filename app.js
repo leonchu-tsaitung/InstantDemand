@@ -43,26 +43,26 @@ function renderTable() {
                     <span class="detail-value">${item.totalStock}</span>
                 </div>
                 <div class="detail-item">
-                    <span class="detail-label">現有庫存</span>
-                    <span class="detail-value tooltip">
-                        ${item.inStock.amount}
+                    <span class="detail-label tooltip">
+                        現有庫存
                         <span class="tooltip-content">
                             ${item.inStock.details.map(d => 
                                 `批號${d.batch}：${d.amount}（${d.date}）`
                             ).join('<br>')}
                         </span>
                     </span>
+                    <span class="detail-value">${item.inStock.amount}</span>
                 </div>
                 <div class="detail-item">
-                    <span class="detail-label">在途庫存</span>
-                    <span class="detail-value tooltip">
-                        ${item.inTransit.amount}
+                    <span class="detail-label tooltip">
+                        在途庫存
                         <span class="tooltip-content">
                             ${item.inTransit.details.map(d => 
                                 `供應商${d.supplier}：${d.amount}（${d.date}）`
                             ).join('<br>')}
                         </span>
                     </span>
+                    <span class="detail-value">${item.inTransit.amount}</span>
                 </div>
             </div>
             <div class="item-actions">
