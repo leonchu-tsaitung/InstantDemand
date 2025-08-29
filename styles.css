@@ -1,0 +1,311 @@
+/* 基本樣式 */
+body {
+    margin: 0;
+    padding: 20px;
+    background-color: #fafafa;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+.title {
+    color: #3f51b5;
+    margin-bottom: 24px;
+}
+
+/* 表格樣式 */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    background: white;
+    border-radius: 2px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 
+                0 3px 1px -2px rgba(0,0,0,.2), 
+                0 1px 5px 0 rgba(0,0,0,.12);
+}
+
+.mdl-data-table {
+    width: 100%;
+    margin: 0;
+    border: none;
+    table-layout: fixed;
+}
+
+.mdl-data-table th,
+.mdl-data-table td {
+    height: 48px;
+    padding: 0 16px;
+    font-size: 13px;
+    position: relative;
+    vertical-align: middle;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.mdl-data-table th {
+    color: rgba(0,0,0,.54);
+    background-color: #fafafa;
+}
+
+/* 固定欄位寬度 */
+.mdl-data-table th:nth-child(1),
+.mdl-data-table td:nth-child(1) {
+    width: 150px;
+}
+
+.mdl-data-table th:nth-child(2),
+.mdl-data-table td:nth-child(2),
+.mdl-data-table th:nth-child(3),
+.mdl-data-table td:nth-child(3),
+.mdl-data-table th:nth-child(4),
+.mdl-data-table td:nth-child(4),
+.mdl-data-table th:nth-child(5),
+.mdl-data-table td:nth-child(5) {
+    width: 100px;
+    text-align: right;
+}
+
+.mdl-data-table th:nth-child(6),
+.mdl-data-table td:nth-child(6),
+.mdl-data-table th:nth-child(7),
+.mdl-data-table td:nth-child(7) {
+    width: 120px;
+    text-align: right;
+}
+
+.mdl-data-table th:nth-child(8),
+.mdl-data-table td:nth-child(8) {
+    width: 200px;
+    text-align: center;
+}
+
+
+/* 行樣式 */
+tr.highlight {
+    background-color: #ffebee !important;
+}
+
+tr.inactive {
+    background-color: #f5f5f5 !important;
+    color: rgba(0,0,0,.38) !important;
+}
+
+/* 子項卡片樣式 */
+.sub-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 24px;
+    margin: -8px 16px 16px 64px;
+}
+
+.sub-item-card {
+    position: relative;
+    width: 100%;
+    padding: 16px 16px 16px 120px;
+    border-radius: 4px;
+}
+
+.sub-item-card::before {
+    content: attr(data-type);
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.7);
+}
+
+.sub-item-card.auction {
+    background-color: #e8eaf6;
+    border-left: 4px solid #3f51b5;
+}
+
+.sub-item-card.auction::before {
+    content: "拍買項目";
+}
+
+.sub-item-card.purchase {
+    background-color: #fff3e0;
+    border-left: 4px solid #ff9800;
+}
+
+.sub-item-card.purchase::before {
+    content: "採買項目";
+}
+
+.sub-item-card .card-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.sub-item-card .card-row:last-child {
+    margin-bottom: 0;
+}
+
+.sub-item-card .card-label {
+    flex: 0 0 80px;
+    color: rgba(0,0,0,0.6);
+    font-size: 14px;
+}
+
+.sub-item-card .card-content {
+    flex: 1;
+}
+
+/* 按鈕樣式 */
+.mdl-button {
+    margin-right: 8px;
+    text-transform: none;
+}
+
+.mdl-button--primary {
+    color: rgb(63,81,181) !important;
+}
+
+.mdl-button--accent {
+    color: rgb(255,64,129) !important;
+}
+
+.mdl-button--warning {
+    color: #ff9800 !important;
+}
+
+.copy-button {
+    background-color: #4caf50 !important;
+    color: white !important;
+}
+
+.action-buttons {
+    margin-bottom: 16px;
+    text-align: right;
+}
+
+
+/* 按鈕樣式 */
+.mdl-button.mdl-js-button.mdl-button--raised.mdl-button--primary.auction {
+    color: #fff !important;
+    background-color: #3f51b5 !important;
+}
+
+.mdl-button.mdl-js-button.mdl-button--raised.mdl-button--primary.purchase {
+    color: #fff !important;
+    background-color: #ff9800 !important;
+}
+
+.mdl-button.mdl-js-button.mdl-button--raised.mdl-button--primary.dual {
+    color: #fff !important;
+    background: linear-gradient(45deg, #3f51b5 0%, #ff9800 100%) !important;
+    background-size: 200% 100% !important;
+    transition: background-position 0.5s !important;
+}
+
+.mdl-button.mdl-js-button.mdl-button--raised.mdl-button--primary.dual:hover {
+    background-position: right center !important;
+}
+
+/* 工具提示樣式 */
+.mdl-tooltip {
+    max-width: 200px;
+    background: rgba(97,97,97,.9);
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+    color: #3f51b5;
+    text-decoration: underline;
+}
+
+.tooltip .tooltip-content {
+    visibility: hidden;
+    background-color: rgba(97,97,97,.9);
+    color: white;
+    text-align: left;
+    padding: 8px 16px;
+    border-radius: 2px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    font-size: 12px;
+    line-height: 14px;
+}
+
+.tooltip:hover .tooltip-content {
+    visibility: visible;
+}
+
+/* 輸入框樣式 */
+.mdl-textfield {
+    width: 100px;
+    margin: 0 8px;
+}
+
+.mdl-textfield__input {
+    text-align: right;
+}
+
+.mdl-selectfield {
+    width: 150px;
+    margin: 0 8px;
+}
+
+/* 對話框樣式 */
+dialog::backdrop {
+    background-color: rgba(0,0,0,0.5);
+}
+
+.mdl-dialog {
+    background-color: white;
+    padding: 24px;
+    width: 400px;
+    border: none;
+    border-radius: 2px;
+    text-align: center;
+}
+
+.mdl-dialog__title {
+    margin: 0 0 16px;
+    color: rgba(0,0,0,.87);
+}
+
+.mdl-dialog__content {
+    padding: 24px 0;
+    color: rgba(0,0,0,.54);
+}
+
+.mdl-dialog__actions {
+    padding: 8px 0 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+/* 強調樣式 */
+.emphasis {
+    color: #f44336;
+    font-weight: 500;
+}
+
+.inactive .emphasis {
+    background-color: #ffebee;
+    padding: 2px 6px;
+    border-radius: 2px;
+}
+
+/* Material Design elevation */
+.mdl-shadow--2dp {
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),
+                0 3px 1px -2px rgba(0,0,0,.2),
+                0 1px 5px 0 rgba(0,0,0,.12);
+}
