@@ -7,53 +7,74 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTable();
 });
 
-// 渲染表格
+// 渲染卡片
 function renderTable() {
-    const tbody = document.getElementById('tableBody');
-    tbody.innerHTML = '';
+    const container = document.getElementById('itemsContainer');
+    container.innerHTML = '';
 
     currentItems.forEach(item => {
-        // 主要品項行
-        const tr = document.createElement('tr');
-        tr.className = `${item.active ? '' : 'inactive'} ${item.todayShortage > 0 ? 'highlight' : ''}`;
+        // 創建主要品項卡片
+        const card = document.createElement('div');
+        card.className = `mdl-card mdl-shadow--2dp item-card ${item.active ? '' : 'inactive'} ${item.todayShortage > 0 ? 'highlight' : ''}`;
         
-        tr.innerHTML = `
-            <td>${item.name}</td>
-            <td>${item.todayShortage > 0 
-                ? `<span class="emphasis">${item.todayShortage}</span>` 
-                : item.todayShortage}</td>
-            <td>${item.threeDayShortage}</td>
-            <td>${item.todayDemand}</td>
-            <td>${item.totalStock}</td>
-            <td>
-                <span class="tooltip">
-                    ${item.inStock.amount}
-                    <span class="tooltip-content">
-                        ${item.inStock.details.map(d => 
-                            `批號${d.batch}：${d.amount}（${d.date}）`
-                        ).join('<br>')}
+        const cardContent = document.createElement('div');
+        cardContent.className = 'mdl-card__supporting-text';
+        
+        // 上半部：主要資訊
+        const mainInfo = document.createElement('div');
+        mainInfo.className = 'main-info';
+        mainInfo.innerHTML = `
+            <h2 class="mdl-card__title-text">${item.name}</h2>
+            <div class="item-details">
+                <div class="detail-item">
+                    <span class="detail-label">今日缺量</span>
+                    <span class="detail-value ${item.todayShortage > 0 ? 'emphasis' : ''}">${item.todayShortage}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">三日缺量</span>
+                    <span class="detail-value">${item.threeDayShortage}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">今日需求</span>
+                    <span class="detail-value">${item.todayDemand}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">總庫存</span>
+                    <span class="detail-value">${item.totalStock}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">現有庫存</span>
+                    <span class="detail-value tooltip">
+                        ${item.inStock.amount}
+                        <span class="tooltip-content">
+                            ${item.inStock.details.map(d => 
+                                `批號${d.batch}：${d.amount}（${d.date}）`
+                            ).join('<br>')}
+                        </span>
                     </span>
-                </span>
-            </td>
-            <td>
-                <span class="tooltip">
-                    ${item.inTransit.amount}
-                    <span class="tooltip-content">
-                        ${item.inTransit.details.map(d => 
-                            `供應商${d.supplier}：${d.amount}（${d.date}）`
-                        ).join('<br>')}
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">在途庫存</span>
+                    <span class="detail-value tooltip">
+                        ${item.inTransit.amount}
+                        <span class="tooltip-content">
+                            ${item.inTransit.details.map(d => 
+                                `供應商${d.supplier}：${d.amount}（${d.date}）`
+                            ).join('<br>')}
+                        </span>
                     </span>
-                </span>
-            </td>
-            <td>${renderButtons(item)}</td>
+                </div>
+            </div>
+            <div class="item-actions">
+                ${renderButtons(item)}
+            </div>
         `;
-        tbody.appendChild(tr);
+        cardContent.appendChild(mainInfo);
 
-        // 子項卡片（如果是活動狀態）
+        // 下半部：子項卡片
         if (item.active) {
-            const subItemsRow = document.createElement('tr');
             const subItemsContainer = document.createElement('div');
-            subItemsContainer.className = 'sub-items';
+            subItemsContainer.className = 'sub-items-container';
             
             if (item.mode === 'auction' || item.mode === 'dual') {
                 subItemsContainer.appendChild(createAuctionRow(item));
@@ -61,14 +82,12 @@ function renderTable() {
             if (item.mode === 'purchase' || item.mode === 'dual') {
                 subItemsContainer.appendChild(createPurchaseRow(item));
             }
-
-            const td = document.createElement('td');
-            td.colSpan = 8;
-            td.style.padding = '0';
-            td.appendChild(subItemsContainer);
-            subItemsRow.appendChild(td);
-            tbody.appendChild(subItemsRow);
+            
+            cardContent.appendChild(subItemsContainer);
         }
+
+        card.appendChild(cardContent);
+        container.appendChild(card);
     });
 
     // 確保新增的 MDL 元件被正確初始化
