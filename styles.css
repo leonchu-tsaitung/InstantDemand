@@ -43,6 +43,7 @@ body {
     display: flex;
     align-items: center;
     min-height: 64px;
+    border-bottom: 1px solid rgba(0,0,0,.1);
 }
 
 .mdl-card__title-text {
@@ -51,6 +52,29 @@ body {
     margin: 0;
     min-width: 150px;
     flex-shrink: 0;
+}
+
+.button-section {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(4, 120px);
+    gap: 16px;
+    border-bottom: 1px solid rgba(0,0,0,.1);
+}
+
+.button-section button {
+    width: 120px;
+}
+
+.button-placeholder {
+    width: 120px;
+    height: 36px; /* 與按鈕高度相同 */
+}
+
+/* 確保子項區域有正確的間距 */
+.sub-items-container {
+    padding: 16px;
+    background: #f8f8f8;
 }
 
 .item-details {
@@ -282,15 +306,15 @@ tr.inactive {
 }
 
 .mdl-button--primary {
-    color: rgb(63,81,181) !important;
+    color: rgb(63,81,181) ;
 }
 
 .mdl-button--accent {
-    color: rgb(255,64,129) !important;
+    color: rgb(255,64,129) ;
 }
 
 .mdl-button--warning {
-    color: #ff9800 !important;
+    color: #ff9800 ;
 }
 
 .copy-button {

@@ -17,6 +17,7 @@ function renderTable() {
         const card = document.createElement('div');
         card.className = `mdl-card mdl-shadow--2dp item-card ${item.active ? '' : 'inactive'} ${item.todayShortage > 0 ? 'highlight' : ''}`;
         
+        // 第一層：主要品項和數據
         const cardContent = document.createElement('div');
         cardContent.className = 'mdl-card__supporting-text';
         
@@ -65,11 +66,14 @@ function renderTable() {
                     <span class="detail-value">${item.inTransit.amount}</span>
                 </div>
             </div>
-            <div class="item-actions">
-                ${renderButtons(item)}
-            </div>
         `;
         cardContent.appendChild(mainInfo);
+
+        // 第二層：按鈕群
+        const buttonSection = document.createElement('div');
+        buttonSection.className = 'button-section';
+        buttonSection.innerHTML = renderButtons(item);
+        cardContent.appendChild(buttonSection);
 
         // 下半部：子項卡片
         if (item.active) {
@@ -96,28 +100,42 @@ function renderTable() {
     }
 }
 
-// 渲染按鈕
+// 渲染固定位置按鈕
 function renderButtons(item) {
+    // 建立四個固定位置的按鈕位置
+    let buttons = {
+        toAuction: '',
+        toPurchase: '',
+        toPartial: '',
+        activeToggle: ''
+    };
+
     if (!item.active) {
-        return `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" onclick="setActive(${item.id})">Active</button>`;
+        buttons.activeToggle = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" onclick="setActive(${item.id})">Active</button>`;
+    } else {
+        // 根據模式設置適當的按鈕
+        switch (item.mode) {
+            case 'auction':
+                buttons.toPurchase = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary" onclick="switchMode(${item.id}, 'purchase')">轉採買</button>`;
+                buttons.toPartial = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary" onclick="switchMode(${item.id}, 'dual')">部分採買</button>`;
+                break;
+            case 'purchase':
+                buttons.toAuction = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary" onclick="switchMode(${item.id}, 'auction')">轉拍買</button>`;
+                break;
+            case 'dual':
+                buttons.toPurchase = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary" onclick="switchMode(${item.id}, 'purchase')">轉採買</button>`;
+                break;
+        }
+        buttons.activeToggle = `<button class="mdl-button mdl-js-button mdl-button--raised" onclick="setInactive(${item.id})">Inactive</button>`;
     }
 
-    let buttons = '';
-    switch (item.mode) {
-        case 'auction':
-            buttons = `
-                <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary purchase" onclick="switchMode(${item.id}, 'purchase')">轉採買</button>
-                <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary dual" onclick="switchMode(${item.id}, 'dual')">部分採買</button>
-            `;
-            break;
-        case 'purchase':
-            buttons = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary auction" onclick="switchMode(${item.id}, 'auction')">轉拍買</button>`;
-            break;
-        case 'dual':
-            buttons = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary purchase" onclick="switchMode(${item.id}, 'purchase')">轉採買</button>`;
-            break;
-    }
-    return buttons + `<button class="mdl-button mdl-js-button mdl-button--raised" onclick="setInactive(${item.id})">Inactive</button>`;
+    // 返回所有按鈕，即使是空的位置也保留
+    return `
+        ${buttons.toAuction || '<div class="button-placeholder"></div>'}
+        ${buttons.toPurchase || '<div class="button-placeholder"></div>'}
+        ${buttons.toPartial || '<div class="button-placeholder"></div>'}
+        ${buttons.activeToggle}
+    `;
 }
 
 // 創建拍買子項
