@@ -37,6 +37,21 @@
             <div class="container">
                 <h1 class="mdl-typography--display-1">日總需管理系統</h1>
                 
+                <div class="filter-buttons">
+                    <button id="filterAll" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent filter-button active" onclick="showAll()">
+                        <i class="material-icons">view_list</i>
+                        顯示全部
+                    </button>
+                    <button id="filterAuction" class="mdl-button mdl-js-button mdl-button--raised filter-button" onclick="showAuctionOnly()">
+                        <i class="material-icons">gavel</i>
+                        有拍買項目
+                    </button>
+                    <button id="filterPurchase" class="mdl-button mdl-js-button mdl-button--raised filter-button" onclick="showPurchaseOnly()">
+                        <i class="material-icons">shopping_cart</i>
+                        有採買項目
+                    </button>
+                </div>
+                
                 <div class="action-buttons">
                     <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored copy-button" onclick="copyAuctionInfo()">
                         <i class="material-icons">content_copy</i>

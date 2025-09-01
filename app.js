@@ -1,6 +1,7 @@
 // 全局變數
 let currentItems = [...items];
 let itemToInactive = null;
+let currentFilter = 'all'; // 篩選狀態: 'all', 'auction', 'purchase'
 
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
@@ -12,7 +13,8 @@ function renderTable() {
     const container = document.getElementById('itemsContainer');
     container.innerHTML = '';
 
-    currentItems.forEach(item => {
+    const filteredItems = getFilteredItems();
+    filteredItems.forEach(item => {
         // 創建主要品項卡片
         const card = document.createElement('div');
         card.className = `mdl-card mdl-shadow--2dp item-card ${item.active ? '' : 'inactive'} ${item.todayShortage > 0 ? 'highlight' : ''}`;
@@ -338,4 +340,67 @@ function copyPurchaseInfo() {
     navigator.clipboard.writeText(purchaseInfo)
         .then(() => alert('已複製採買資訊到剪貼簿'))
         .catch(() => alert('複製失敗'));
+}
+
+// 篩選功能
+function getFilteredItems() {
+    switch(currentFilter) {
+        case 'auction':
+            return currentItems.filter(item => 
+                item.active && 
+                (item.mode === 'auction' || item.mode === 'dual') && 
+                item.auctionAmount > 0
+            );
+        case 'purchase':
+            return currentItems.filter(item => 
+                item.active && 
+                (item.mode === 'purchase' || item.mode === 'dual') && 
+                item.purchaseAmount > 0
+            );
+        default:
+            return currentItems;
+    }
+}
+
+function updateFilterButtons() {
+    // 移除所有按鈕的 active 類別
+    document.querySelectorAll('.filter-button').forEach(btn => {
+        btn.classList.remove('active', 'mdl-button--accent');
+    });
+    
+    // 為當前選中的按鈕添加 active 類別
+    let activeButtonId;
+    switch(currentFilter) {
+        case 'auction':
+            activeButtonId = 'filterAuction';
+            break;
+        case 'purchase':
+            activeButtonId = 'filterPurchase';
+            break;
+        default:
+            activeButtonId = 'filterAll';
+    }
+    
+    const activeButton = document.getElementById(activeButtonId);
+    if (activeButton) {
+        activeButton.classList.add('active', 'mdl-button--accent');
+    }
+}
+
+function showAll() {
+    currentFilter = 'all';
+    updateFilterButtons();
+    renderTable();
+}
+
+function showAuctionOnly() {
+    currentFilter = 'auction';
+    updateFilterButtons();
+    renderTable();
+}
+
+function showPurchaseOnly() {
+    currentFilter = 'purchase';
+    updateFilterButtons();
+    renderTable();
 }

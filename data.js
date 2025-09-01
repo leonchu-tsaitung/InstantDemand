@@ -3,6 +3,7 @@ const items = [
     {
         id: 1,
         name: '高麗菜',
+        category: '葉菜類',
         todayShortage: 12,
         threeDayShortage: 30,
         todayDemand: 50,
@@ -30,6 +31,7 @@ const items = [
     {
         id: 2,
         name: '青江菜',
+        category: '葉菜類',
         todayShortage: 0,
         threeDayShortage: 10,
         todayDemand: 40,
@@ -55,6 +57,7 @@ const items = [
     {
         id: 3,
         name: '大白菜',
+        category: '葉菜類',
         todayShortage: 25,
         threeDayShortage: 45,
         todayDemand: 60,
@@ -82,6 +85,7 @@ const items = [
     {
         id: 4,
         name: '小白菜',
+        category: '葉菜類',
         todayShortage: 0,
         threeDayShortage: 5,
         todayDemand: 30,
@@ -106,6 +110,7 @@ const items = [
     {
         id: 5,
         name: '油菜',
+        category: '葉菜類',
         todayShortage: 8,
         threeDayShortage: 20,
         todayDemand: 25,
@@ -130,6 +135,7 @@ const items = [
     {
         id: 6,
         name: '菠菜',
+        category: '葉菜類',
         todayShortage: 15,
         threeDayShortage: 35,
         todayDemand: 45,
@@ -157,6 +163,7 @@ const items = [
     {
         id: 7,
         name: '空心菜',
+        category: '葉菜類',
         todayShortage: 0,
         threeDayShortage: 0,
         todayDemand: 20,
@@ -181,6 +188,7 @@ const items = [
     {
         id: 8,
         name: '地瓜葉',
+        category: '葉菜類',
         todayShortage: 18,
         threeDayShortage: 40,
         todayDemand: 55,
@@ -207,6 +215,7 @@ const items = [
     {
         id: 9,
         name: '韭菜',
+        category: '特殊菜類',
         todayShortage: 5,
         threeDayShortage: 15,
         todayDemand: 35,
@@ -231,6 +240,7 @@ const items = [
     {
         id: 10,
         name: '茼蒿',
+        category: '葉菜類',
         todayShortage: 0,
         threeDayShortage: 8,
         todayDemand: 28,
@@ -255,6 +265,7 @@ const items = [
     {
         id: 11,
         name: '芹菜',
+        category: '根莖類',
         todayShortage: 22,
         threeDayShortage: 50,
         todayDemand: 65,
@@ -282,6 +293,7 @@ const items = [
     {
         id: 12,
         name: '菜心',
+        category: '葉菜類',
         todayShortage: 0,
         threeDayShortage: 0,
         todayDemand: 15,
@@ -306,6 +318,7 @@ const items = [
     {
         id: 13,
         name: '大芥菜',
+        category: '葉菜類',
         todayShortage: 10,
         threeDayShortage: 25,
         todayDemand: 40,
@@ -331,6 +344,7 @@ const items = [
     {
         id: 14,
         name: '小芥菜',
+        category: '葉菜類',
         todayShortage: 0,
         threeDayShortage: 12,
         todayDemand: 30,
@@ -355,6 +369,7 @@ const items = [
     {
         id: 15,
         name: '莧菜',
+        category: '葉菜類',
         todayShortage: 15,
         threeDayShortage: 35,
         todayDemand: 50,
@@ -382,6 +397,7 @@ const items = [
     {
         id: 16,
         name: '皇宮菜',
+        category: '特殊菜類',
         todayShortage: 8,
         threeDayShortage: 20,
         todayDemand: 35,
@@ -406,6 +422,7 @@ const items = [
     {
         id: 17,
         name: '甜羅美',
+        category: '葉菜類',
         todayShortage: 0,
         threeDayShortage: 0,
         todayDemand: 25,
@@ -430,6 +447,7 @@ const items = [
     {
         id: 18,
         name: '龍鬚菜',
+        category: '特殊菜類',
         todayShortage: 20,
         threeDayShortage: 45,
         todayDemand: 60,
@@ -456,6 +474,7 @@ const items = [
     {
         id: 19,
         name: '大陸妹',
+        category: '葉菜類',
         todayShortage: 12,
         threeDayShortage: 30,
         todayDemand: 45,
@@ -482,6 +501,7 @@ const items = [
     {
         id: 20,
         name: '白菜苗',
+        category: '葉菜類',
         todayShortage: 0,
         threeDayShortage: 15,
         todayDemand: 35,
@@ -506,6 +526,7 @@ const items = [
     {
         id: 21,
         name: '芥蘭菜',
+        category: '根莖類',
         todayShortage: 5,
         threeDayShortage: 18,
         todayDemand: 30,
@@ -530,6 +551,7 @@ const items = [
     {
         id: 22,
         name: '娃娃菜',
+        category: '葉菜類',
         todayShortage: 0,
         threeDayShortage: 10,
         todayDemand: 25,
@@ -554,3 +576,5 @@ const items = [
 ];
 
 const suppliers = ['攤商A', '攤商B', '攤商C'];
+
+const categories = ['葉菜類', '根莖類', '特殊菜類'];
