@@ -148,12 +148,6 @@ function createItemCard(item) {
     `;
     cardContent.appendChild(mainInfo);
 
-    // 第二層：按鈕群
-    const buttonSection = document.createElement('div');
-    buttonSection.className = 'button-section';
-    buttonSection.innerHTML = renderButtons(item);
-    cardContent.appendChild(buttonSection);
-
     // 下半部：子項卡片
     if (item.active) {
         const subItemsContainer = document.createElement('div');
@@ -168,6 +162,12 @@ function createItemCard(item) {
         
         cardContent.appendChild(subItemsContainer);
     }
+
+    // 第二層：按鈕群 (移到子項下面)
+    const buttonSection = document.createElement('div');
+    buttonSection.className = 'button-section';
+    buttonSection.innerHTML = renderButtons(item);
+    cardContent.appendChild(buttonSection);
 
     card.appendChild(cardContent);
     return card;
