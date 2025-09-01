@@ -462,9 +462,6 @@ tr.inactive {
     transition: background-position 0.5s !important;
 }
 
-.mdl-button.mdl-js-button.mdl-button--raised.mdl-button--primary.dual:hover {
-    background-position: right center !important;
-}
 
 /* 工具提示樣式 */
 .mdl-tooltip {
