@@ -116,14 +116,14 @@ function renderButtons(item) {
         // 根據模式設置適當的按鈕
         switch (item.mode) {
             case 'auction':
-                buttons.toPurchase = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary" onclick="switchMode(${item.id}, 'purchase')">轉採買</button>`;
-                buttons.toPartial = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary" onclick="switchMode(${item.id}, 'dual')">部分採買</button>`;
+                buttons.toPurchase = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary purchase" onclick="switchMode(${item.id}, 'purchase')">轉採買</button>`;
+                buttons.toPartial = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary dual" onclick="switchMode(${item.id}, 'dual')">部分採買</button>`;
                 break;
             case 'purchase':
-                buttons.toAuction = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary" onclick="switchMode(${item.id}, 'auction')">轉拍買</button>`;
+                buttons.toAuction = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary auction" onclick="switchMode(${item.id}, 'auction')">轉拍買</button>`;
                 break;
             case 'dual':
-                buttons.toPurchase = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary" onclick="switchMode(${item.id}, 'purchase')">轉採買</button>`;
+                buttons.toPurchase = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary purchase" onclick="switchMode(${item.id}, 'purchase')">轉採買</button>`;
                 break;
         }
         buttons.activeToggle = `<button class="mdl-button mdl-js-button mdl-button--raised" onclick="setInactive(${item.id})">Inactive</button>`;
