@@ -143,6 +143,31 @@ body {
     border-left: 4px solid #ff4081;
 }
 
+/* 橫向排列樣式 */
+.card-row-horizontal {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.card-field {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 100px;
+    flex: 1;
+}
+
+.field-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(0,0,0,.6);
+    margin-bottom: 2px;
+}
+
+/* 保留舊樣式以防有其他地方使用 */
 .card-row {
     display: flex;
     align-items: center;
@@ -171,6 +196,15 @@ body {
     margin: 0;
     padding: 0;
     width: 100px;
+}
+
+/* 橫向布局中的輸入元素調整 */
+.card-row-horizontal .mdl-textfield {
+    width: 80px;
+}
+
+.card-row-horizontal .mdl-selectfield {
+    width: 120px;
 }
 
 .mdl-selectfield {
@@ -511,6 +545,28 @@ tr.inactive {
 .mdl-selectfield {
     width: 150px;
     margin: 0 8px;
+}
+
+/* 單位和價格文字樣式 */
+.unit-text {
+    font-size: 12px;
+    color: rgba(0,0,0,.7);
+    background: #f0f8ff;
+    padding: 3px 6px;
+    border-radius: 3px;
+    border: 1px solid #e0e7ff;
+    white-space: nowrap;
+}
+
+.price-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: #2e7d32;
+    background: #e8f5e8;
+    padding: 3px 6px;
+    border-radius: 3px;
+    border: 1px solid #c8e6c9;
+    white-space: nowrap;
 }
 
 /* 對話框樣式 */

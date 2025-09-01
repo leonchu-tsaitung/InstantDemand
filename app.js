@@ -6,6 +6,18 @@ let currentCategoryFilter = 'all'; // 類別篩選狀態: 'all', '葉菜類', '�
 
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
+    // 為沒有單位和價格的項目設置預設值
+    currentItems.forEach(item => {
+        if (!item.unit) {
+            item.unit = '把(約300G/把)';
+        }
+        if (!item.auctionPrice) {
+            item.auctionPrice = Math.floor(Math.random() * 20) + 15; // 15-35之間的隨機價格
+        }
+        if (!item.purchasePrice) {
+            item.purchasePrice = item.auctionPrice + Math.floor(Math.random() * 5) + 2; // 比拍買價格高2-7元
+        }
+    });
     renderTable();
 });
 
@@ -225,21 +237,27 @@ function createAuctionRow(item) {
     const div = document.createElement('div');
     div.className = 'sub-item-card auction mdl-shadow--2dp';
     div.innerHTML = `
-        <div class="card-row">
-            <span class="card-label">拍賣代碼</span>
-            <div class="card-content">
-                <span class="mdl-chip">
-                    <span class="mdl-chip__text">${item.auctionCode}</span>
-                </span>
-            </div>
-        </div>
-        <div class="card-row">
-            <span class="card-label">拍買量</span>
-            <div class="card-content">
+        <div class="card-row-horizontal">
+            <div class="card-field">
+                <span class="field-label">拍買量</span>
                 <div class="mdl-textfield mdl-js-textfield">
                     <input type="number" class="mdl-textfield__input" value="${item.auctionAmount}" 
                            onchange="updateAuctionAmount(${item.id}, this.value)">
                 </div>
+            </div>
+            <div class="card-field">
+                <span class="field-label">拍賣代碼</span>
+                <span class="mdl-chip">
+                    <span class="mdl-chip__text">${item.auctionCode}</span>
+                </span>
+            </div>
+            <div class="card-field">
+                <span class="field-label">單位</span>
+                <span class="unit-text">${item.unit || '包'}</span>
+            </div>
+            <div class="card-field">
+                <span class="field-label">價格</span>
+                <span class="price-text">$${item.auctionPrice || 0}</span>
             </div>
         </div>
     `;
@@ -251,9 +269,16 @@ function createPurchaseRow(item) {
     const div = document.createElement('div');
     div.className = 'sub-item-card purchase mdl-shadow--2dp';
     div.innerHTML = `
-        <div class="card-row">
-            <span class="card-label">攤商</span>
-            <div class="card-content">
+        <div class="card-row-horizontal">
+            <div class="card-field">
+                <span class="field-label">採買量</span>
+                <div class="mdl-textfield mdl-js-textfield">
+                    <input type="number" class="mdl-textfield__input" value="${item.purchaseAmount}" 
+                           onchange="updatePurchaseAmount(${item.id}, this.value)">
+                </div>
+            </div>
+            <div class="card-field">
+                <span class="field-label">攤商</span>
                 <div class="mdl-selectfield">
                     <select class="mdl-selectfield__select" onchange="updateSupplier(${item.id}, this.value)">
                         ${suppliers.map(s => 
@@ -262,14 +287,13 @@ function createPurchaseRow(item) {
                     </select>
                 </div>
             </div>
-        </div>
-        <div class="card-row">
-            <span class="card-label">採買量</span>
-            <div class="card-content">
-                <div class="mdl-textfield mdl-js-textfield">
-                    <input type="number" class="mdl-textfield__input" value="${item.purchaseAmount}" 
-                           onchange="updatePurchaseAmount(${item.id}, this.value)">
-                </div>
+            <div class="card-field">
+                <span class="field-label">單位</span>
+                <span class="unit-text">${item.unit || '包'}</span>
+            </div>
+            <div class="card-field">
+                <span class="field-label">價格</span>
+                <span class="price-text">$${item.purchasePrice || 0}</span>
             </div>
         </div>
     `;
