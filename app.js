@@ -2,6 +2,7 @@
 let currentItems = [...items];
 let itemToInactive = null;
 let currentFilter = 'all'; // 篩選狀態: 'all', 'auction', 'purchase'
+let currentCategoryFilter = 'all'; // 類別篩選狀態: 'all', '葉菜類', '根莖類', '特殊菜類'
 
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,93 +15,172 @@ function renderTable() {
     container.innerHTML = '';
 
     const filteredItems = getFilteredItems();
-    filteredItems.forEach(item => {
-        // 創建主要品項卡片
-        const card = document.createElement('div');
-        card.className = `mdl-card mdl-shadow--2dp item-card ${item.active ? '' : 'inactive'} ${item.todayShortage > 0 ? 'highlight' : ''}`;
-        
-        // 第一層：主要品項和數據
-        const cardContent = document.createElement('div');
-        cardContent.className = 'mdl-card__supporting-text';
-        
-        // 上半部：主要資訊
-        const mainInfo = document.createElement('div');
-        mainInfo.className = 'main-info';
-        mainInfo.innerHTML = `
-            <h2 class="mdl-card__title-text">${item.name}</h2>
-            <div class="item-details">
-                <div class="detail-item">
-                    <span class="detail-label">今日缺量</span>
-                    <span class="detail-value ${item.todayShortage > 0 ? 'emphasis' : ''}">${item.todayShortage}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">三日缺量</span>
-                    <span class="detail-value">${item.threeDayShortage}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">今日需求</span>
-                    <span class="detail-value">${item.todayDemand}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">總庫存</span>
-                    <span class="detail-value">${item.totalStock}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label tooltip">
-                        現有庫存
-                        <span class="tooltip-content">
-                            ${item.inStock.details.map(d => 
-                                `批號${d.batch}：${d.amount}（${d.date}）`
-                            ).join('<br>')}
-                        </span>
-                    </span>
-                    <span class="detail-value">${item.inStock.amount}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label tooltip">
-                        在途庫存
-                        <span class="tooltip-content">
-                            ${item.inTransit.details.map(d => 
-                                `供應商${d.supplier}：${d.amount}（${d.date}）`
-                            ).join('<br>')}
-                        </span>
-                    </span>
-                    <span class="detail-value">${item.inTransit.amount}</span>
-                </div>
-            </div>
-        `;
-        cardContent.appendChild(mainInfo);
-
-        // 第二層：按鈕群
-        const buttonSection = document.createElement('div');
-        buttonSection.className = 'button-section';
-        buttonSection.innerHTML = renderButtons(item);
-        cardContent.appendChild(buttonSection);
-
-        // 下半部：子項卡片
-        if (item.active) {
-            const subItemsContainer = document.createElement('div');
-            subItemsContainer.className = 'sub-items-container';
-            
-            if (item.mode === 'auction' || item.mode === 'dual') {
-                subItemsContainer.appendChild(createAuctionRow(item));
+    
+    // 如果選擇了特定類別，直接顯示該類別的項目
+    if (currentCategoryFilter !== 'all') {
+        renderCategorySection(container, currentCategoryFilter, filteredItems);
+    } else {
+        // 顯示所有類別，按分類分組
+        const categorizedItems = groupItemsByCategory(filteredItems);
+        categories.forEach(category => {
+            const categoryItems = categorizedItems[category] || [];
+            if (categoryItems.length > 0) {
+                renderCategorySection(container, category, categoryItems);
             }
-            if (item.mode === 'purchase' || item.mode === 'dual') {
-                subItemsContainer.appendChild(createPurchaseRow(item));
-            }
-            
-            cardContent.appendChild(subItemsContainer);
-        }
-
-        card.appendChild(cardContent);
-        container.appendChild(card);
-    });
+        });
+    }
 
     // 確保新增的 MDL 元件被正確初始化
     if (typeof componentHandler !== 'undefined') {
         componentHandler.upgradeAllRegistered();
     }
 }
+
+// 將項目按類別分組
+function groupItemsByCategory(items) {
+    const grouped = {};
+    items.forEach(item => {
+        if (!grouped[item.category]) {
+            grouped[item.category] = [];
+        }
+        grouped[item.category].push(item);
+    });
+    return grouped;
+}
+
+// 渲染類別區段
+function renderCategorySection(container, category, items) {
+    // 創建類別標題
+    const categoryHeader = document.createElement('div');
+    categoryHeader.className = `category-header ${getCategoryClass(category)}`;
+    
+    const shortageCount = items.filter(item => item.todayShortage > 0).length;
+    const totalCount = items.length;
+    
+    categoryHeader.innerHTML = `
+        <div class="category-title">
+            <i class="material-icons category-icon">${getCategoryIcon(category)}</i>
+            <h3 class="category-name">${category}</h3>
+            <span class="category-stats">${totalCount} 項 ${shortageCount > 0 ? `(${shortageCount} 項有缺口)` : ''}</span>
+        </div>
+    `;
+    container.appendChild(categoryHeader);
+    
+    // 創建類別內容容器
+    const categoryContent = document.createElement('div');
+    categoryContent.className = 'category-content';
+    
+    // 渲染該類別下的所有項目
+    items.forEach(item => {
+        const card = createItemCard(item);
+        categoryContent.appendChild(card);
+    });
+    
+    container.appendChild(categoryContent);
+}
+
+// 創建項目卡片 (將原本的卡片創建邏輯提取出來)
+function createItemCard(item) {
+    const card = document.createElement('div');
+    card.className = `mdl-card mdl-shadow--2dp item-card ${item.active ? '' : 'inactive'} ${item.todayShortage > 0 ? 'highlight' : ''}`;
+    
+    // 第一層：主要品項和數據
+    const cardContent = document.createElement('div');
+    cardContent.className = 'mdl-card__supporting-text';
+    
+    // 上半部：主要資訊
+    const mainInfo = document.createElement('div');
+    mainInfo.className = 'main-info';
+    mainInfo.innerHTML = `
+        <h2 class="mdl-card__title-text">${item.name}</h2>
+        <div class="item-details">
+            <div class="detail-item">
+                <span class="detail-label">今日缺量</span>
+                <span class="detail-value ${item.todayShortage > 0 ? 'emphasis' : ''}">${item.todayShortage}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">三日缺量</span>
+                <span class="detail-value">${item.threeDayShortage}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">今日需求</span>
+                <span class="detail-value">${item.todayDemand}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">總庫存</span>
+                <span class="detail-value">${item.totalStock}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label tooltip">
+                    現有庫存
+                    <span class="tooltip-content">
+                        ${item.inStock.details.map(d => 
+                            `批號${d.batch}：${d.amount}（${d.date}）`
+                        ).join('<br>')}
+                    </span>
+                </span>
+                <span class="detail-value">${item.inStock.amount}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label tooltip">
+                    在途庫存
+                    <span class="tooltip-content">
+                        ${item.inTransit.details.map(d => 
+                            `供應商${d.supplier}：${d.amount}（${d.date}）`
+                        ).join('<br>')}
+                    </span>
+                </span>
+                <span class="detail-value">${item.inTransit.amount}</span>
+            </div>
+        </div>
+    `;
+    cardContent.appendChild(mainInfo);
+
+    // 第二層：按鈕群
+    const buttonSection = document.createElement('div');
+    buttonSection.className = 'button-section';
+    buttonSection.innerHTML = renderButtons(item);
+    cardContent.appendChild(buttonSection);
+
+    // 下半部：子項卡片
+    if (item.active) {
+        const subItemsContainer = document.createElement('div');
+        subItemsContainer.className = 'sub-items-container';
+        
+        if (item.mode === 'auction' || item.mode === 'dual') {
+            subItemsContainer.appendChild(createAuctionRow(item));
+        }
+        if (item.mode === 'purchase' || item.mode === 'dual') {
+            subItemsContainer.appendChild(createPurchaseRow(item));
+        }
+        
+        cardContent.appendChild(subItemsContainer);
+    }
+
+    card.appendChild(cardContent);
+    return card;
+}
+
+// 獲取類別樣式類別
+function getCategoryClass(category) {
+    switch(category) {
+        case '葉菜類': return 'leaf-category';
+        case '根莖類': return 'root-category';
+        case '特殊菜類': return 'special-category';
+        default: return 'default-category';
+    }
+}
+
+// 獲取類別圖標
+function getCategoryIcon(category) {
+    switch(category) {
+        case '葉菜類': return 'eco';
+        case '根莖類': return 'grass';
+        case '特殊菜類': return 'star';
+        default: return 'category';
+    }
+}
+
 
 // 渲染固定位置按鈕
 function renderButtons(item) {
@@ -344,63 +424,45 @@ function copyPurchaseInfo() {
 
 // 篩選功能
 function getFilteredItems() {
+    let filteredItems = currentItems;
+    
+    // 第一層：按採購方式篩選
     switch(currentFilter) {
         case 'auction':
-            return currentItems.filter(item => 
+            filteredItems = filteredItems.filter(item => 
                 item.active && 
                 (item.mode === 'auction' || item.mode === 'dual') && 
                 item.auctionAmount > 0
             );
+            break;
         case 'purchase':
-            return currentItems.filter(item => 
+            filteredItems = filteredItems.filter(item => 
                 item.active && 
                 (item.mode === 'purchase' || item.mode === 'dual') && 
                 item.purchaseAmount > 0
             );
-        default:
-            return currentItems;
-    }
-}
-
-function updateFilterButtons() {
-    // 移除所有按鈕的 active 類別
-    document.querySelectorAll('.filter-button').forEach(btn => {
-        btn.classList.remove('active', 'mdl-button--accent');
-    });
-    
-    // 為當前選中的按鈕添加 active 類別
-    let activeButtonId;
-    switch(currentFilter) {
-        case 'auction':
-            activeButtonId = 'filterAuction';
-            break;
-        case 'purchase':
-            activeButtonId = 'filterPurchase';
             break;
         default:
-            activeButtonId = 'filterAll';
+            // 'all' - 不篩選
+            break;
     }
     
-    const activeButton = document.getElementById(activeButtonId);
-    if (activeButton) {
-        activeButton.classList.add('active', 'mdl-button--accent');
+    // 第二層：按類別篩選
+    if (currentCategoryFilter !== 'all') {
+        filteredItems = filteredItems.filter(item => item.category === currentCategoryFilter);
     }
+    
+    return filteredItems;
 }
 
-function showAll() {
-    currentFilter = 'all';
-    updateFilterButtons();
+// 下拉選單事件處理函數
+function onModeFilterChange(value) {
+    currentFilter = value;
     renderTable();
 }
 
-function showAuctionOnly() {
-    currentFilter = 'auction';
-    updateFilterButtons();
+function onCategoryFilterChange(value) {
+    currentCategoryFilter = value;
     renderTable();
 }
 
-function showPurchaseOnly() {
-    currentFilter = 'purchase';
-    updateFilterButtons();
-    renderTable();
-}

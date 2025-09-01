@@ -322,33 +322,120 @@ tr.inactive {
     color: white !important;
 }
 
-/* 篩選按鈕樣式 */
-.filter-buttons {
-    margin-bottom: 16px;
-    text-align: center;
-    padding: 16px 0;
-    border-bottom: 1px solid rgba(0,0,0,.12);
+/* 篩選下拉選單樣式 */
+.filter-selects {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-bottom: 24px;
+    padding: 20px 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,.08);
 }
 
-.filter-button {
-    margin: 0 8px;
-    text-transform: none;
-    min-width: 120px;
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.filter-button.active {
-    background-color: #3f51b5 !important;
-    color: white !important;
+.filter-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(0,0,0,.7);
+    white-space: nowrap;
 }
 
-.filter-button:not(.active) {
+.mdl-selectfield {
+    min-width: 160px;
+}
+
+.mdl-selectfield__select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 2px solid rgba(0,0,0,.12);
+    border-radius: 6px;
     background-color: white;
-    color: rgba(0,0,0,.54);
-    border: 1px solid rgba(0,0,0,.12);
+    font-size: 14px;
+    color: rgba(0,0,0,.87);
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
-.filter-button:not(.active):hover {
-    background-color: #f5f5f5;
+.mdl-selectfield__select:focus {
+    outline: none;
+    border-color: #3f51b5;
+    box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
+}
+
+.mdl-selectfield__select:hover {
+    border-color: rgba(0,0,0,.3);
+}
+
+/* 類別區塊樣式 */
+.category-header {
+    margin: 24px 0 16px 0;
+    padding: 16px;
+    border-radius: 8px;
+    border-left: 4px solid;
+}
+
+.category-header.leaf-category {
+    background: linear-gradient(90deg, #e8f5e8 0%, #f1f8e9 100%);
+    border-left-color: #4caf50;
+}
+
+.category-header.root-category {
+    background: linear-gradient(90deg, #fff3e0 0%, #ffeaa7 100%);
+    border-left-color: #ff9800;
+}
+
+.category-header.special-category {
+    background: linear-gradient(90deg, #f3e5f5 0%, #fce4ec 100%);
+    border-left-color: #9c27b0;
+}
+
+.category-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.category-icon {
+    font-size: 28px;
+}
+
+.category-header.leaf-category .category-icon {
+    color: #4caf50;
+}
+
+.category-header.root-category .category-icon {
+    color: #ff9800;
+}
+
+.category-header.special-category .category-icon {
+    color: #9c27b0;
+}
+
+.category-name {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+    color: rgba(0,0,0,.87);
+}
+
+.category-stats {
+    font-size: 14px;
+    color: rgba(0,0,0,.54);
+    margin-left: auto;
+    background: rgba(255,255,255,.7);
+    padding: 4px 12px;
+    border-radius: 12px;
+}
+
+.category-content {
+    margin-bottom: 32px;
 }
 
 .action-buttons {

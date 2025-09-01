@@ -37,19 +37,28 @@
             <div class="container">
                 <h1 class="mdl-typography--display-1">日總需管理系統</h1>
                 
-                <div class="filter-buttons">
-                    <button id="filterAll" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent filter-button active" onclick="showAll()">
-                        <i class="material-icons">view_list</i>
-                        顯示全部
-                    </button>
-                    <button id="filterAuction" class="mdl-button mdl-js-button mdl-button--raised filter-button" onclick="showAuctionOnly()">
-                        <i class="material-icons">gavel</i>
-                        有拍買項目
-                    </button>
-                    <button id="filterPurchase" class="mdl-button mdl-js-button mdl-button--raised filter-button" onclick="showPurchaseOnly()">
-                        <i class="material-icons">shopping_cart</i>
-                        有採買項目
-                    </button>
+                <div class="filter-selects">
+                    <div class="filter-group">
+                        <label class="filter-label">採購方式篩選：</label>
+                        <div class="mdl-selectfield">
+                            <select id="modeFilter" class="mdl-selectfield__select" onchange="onModeFilterChange(this.value)">
+                                <option value="all">顯示全部</option>
+                                <option value="auction">僅拍買項目</option>
+                                <option value="purchase">僅採買項目</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">類別篩選：</label>
+                        <div class="mdl-selectfield">
+                            <select id="categoryFilter" class="mdl-selectfield__select" onchange="onCategoryFilterChange(this.value)">
+                                <option value="all">全部類別</option>
+                                <option value="葉菜類">🥬 葉菜類</option>
+                                <option value="根莖類">🥕 根莖類</option>
+                                <option value="特殊菜類">🌿 特殊菜類</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="action-buttons">
