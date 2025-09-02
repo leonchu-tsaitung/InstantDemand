@@ -39,7 +39,7 @@ body {
 }
 
 .main-info {
-    padding: 12px;
+    padding: 8px;
     display: flex;
     align-items: center;
     min-height: 48px;
@@ -55,10 +55,10 @@ body {
 }
 
 .button-section {
-    padding: 12px;
+    padding: 8px;
     display: grid;
     grid-template-columns: repeat(4, 100px);
-    gap: 12px;
+    gap: 8px;
     border-bottom: 1px solid rgba(0,0,0,.1);
 }
 
@@ -73,7 +73,7 @@ body {
 
 /* 確保子項區域有正確的間距 */
 .sub-items-container {
-    padding: 12px;
+    padding: 8px;
     background: #f8f8f8;
 }
 
@@ -122,8 +122,8 @@ body {
 
 /* 子項卡片樣式 */
 .sub-items-container {
-    margin-top: 12px;
-    padding: 12px;
+    margin-top: 8px;
+    padding: 8px;
     background: #f5f5f5;
     border-radius: 4px;
 }
@@ -131,7 +131,7 @@ body {
 .sub-item-card {
     background: white;
     margin-bottom: 8px;
-    padding: 12px;
+    padding: 8px;
     border-radius: 4px;
 }
 
@@ -670,7 +670,7 @@ dialog::backdrop {
 
 /* 基本資訊區 */
 .basic-info-section {
-    padding: 12px;
+    padding: 8px;
     border-bottom: 1px solid rgba(0,0,0,.1);
     background: white;
 }
@@ -721,7 +721,7 @@ dialog::backdrop {
 
 /* 今日缺口區 */
 .today-shortage-section {
-    padding: 12px;
+    padding: 8px;
     background: #f8f9ff;
     border-bottom: 1px solid rgba(0,0,0,.1);
 }
@@ -735,7 +735,7 @@ dialog::backdrop {
 
 /* 未來缺口區 */
 .future-shortage-section {
-    padding: 12px;
+    padding: 8px;
     background: #fff8f0;
 }
 
@@ -748,7 +748,7 @@ dialog::backdrop {
 
 /* 區塊標題樣式 */
 .section-header {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .section-title-row {
