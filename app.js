@@ -149,6 +149,7 @@ function createBasicInfoSection(item) {
             </div>
         </div>
     `;
+    
     return section;
 }
 
@@ -173,6 +174,9 @@ function createTodayShortageSection(item) {
                     <span class="data-value">${item.todayDemand}</span>
                 </div>
             </div>
+            <div class="button-section">
+                ${renderButtons(item)}
+            </div>
         </div>
     `;
     section.appendChild(sectionHeader);
@@ -193,12 +197,6 @@ function createTodayShortageSection(item) {
         
         section.appendChild(subItemsContainer);
     }
-    
-    // 操作按鈕群
-    const buttonSection = document.createElement('div');
-    buttonSection.className = 'button-section';
-    buttonSection.innerHTML = renderButtons(item);
-    section.appendChild(buttonSection);
     
     return section;
 }
