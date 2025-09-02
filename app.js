@@ -1,8 +1,9 @@
 // 全局變數
 let currentItems = [...items];
 let itemToInactive = null;
-let currentFilter = 'all'; // 篩選狀態: 'all', 'auction', 'purchase'
+let currentFilter = 'all'; // 篩選狀態: 'all', 'auction', 'purchase', 'direct'
 let currentCategoryFilter = 'all'; // 類別篩選狀態: 'all', '葉菜類', '根莖類', '特殊菜類'
+let currentShortageFilter = 'all'; // 缺口狀態篩選: 'all', 'today', 'any', 'none'
 
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
@@ -623,6 +624,13 @@ function getFilteredItems() {
                 item.purchaseAmount > 0
             );
             break;
+        case 'direct':
+            filteredItems = filteredItems.filter(item => 
+                item.active && 
+                item.directSuppliers && 
+                item.directSuppliers.some(supplier => supplier.purchaseAmount > 0)
+            );
+            break;
         default:
             // 'all' - 不篩選
             break;
@@ -631,6 +639,26 @@ function getFilteredItems() {
     // 第二層：按類別篩選
     if (currentCategoryFilter !== 'all') {
         filteredItems = filteredItems.filter(item => item.category === currentCategoryFilter);
+    }
+    
+    // 第三層：按缺口狀態篩選
+    switch(currentShortageFilter) {
+        case 'today':
+            filteredItems = filteredItems.filter(item => item.todayShortage > 0);
+            break;
+        case 'any':
+            filteredItems = filteredItems.filter(item => 
+                item.todayShortage > 0 || item.threeDayShortage > 0
+            );
+            break;
+        case 'none':
+            filteredItems = filteredItems.filter(item => 
+                item.todayShortage === 0 && item.threeDayShortage === 0
+            );
+            break;
+        default:
+            // 'all' - 不篩選
+            break;
     }
     
     return filteredItems;
@@ -644,6 +672,11 @@ function onModeFilterChange(value) {
 
 function onCategoryFilterChange(value) {
     currentCategoryFilter = value;
+    renderTable();
+}
+
+function onShortageFilterChange(value) {
+    currentShortageFilter = value;
     renderTable();
 }
 

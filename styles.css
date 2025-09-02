@@ -362,18 +362,22 @@ tr.inactive {
 .filter-selects {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 16px;
     margin-bottom: 16px;
     padding: 12px 0;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     border-radius: 8px;
     border: 1px solid rgba(0,0,0,.08);
+    flex-wrap: wrap;
 }
 
 .filter-group {
     display: flex;
     align-items: center;
     gap: 8px;
+    min-width: 200px;
+    flex: 1;
+    justify-content: center;
 }
 
 .filter-label {
