@@ -618,3 +618,128 @@ dialog::backdrop {
                 0 3px 1px -2px rgba(0,0,0,.2),
                 0 1px 5px 0 rgba(0,0,0,.12);
 }
+
+/* 三區塊布局樣式 */
+
+/* 基本資訊區 */
+.basic-info-section {
+    padding: 12px;
+    border-bottom: 1px solid rgba(0,0,0,.1);
+    background: white;
+}
+
+.basic-info-section .mdl-card__title-text {
+    color: #3f51b5;
+    font-size: 18px;
+    margin: 0 0 12px 0;
+    min-width: 120px;
+    flex-shrink: 0;
+}
+
+/* 今日缺口區 */
+.today-shortage-section {
+    padding: 12px;
+    background: #f8f9ff;
+    border-bottom: 1px solid rgba(0,0,0,.1);
+}
+
+.today-shortage-section .section-title {
+    color: #3f51b5;
+    font-size: 16px;
+    margin: 0 0 8px 0;
+    font-weight: 500;
+}
+
+/* 未來缺口區 */
+.future-shortage-section {
+    padding: 12px;
+    background: #fff8f0;
+}
+
+.future-shortage-section .section-title {
+    color: #ff9800;
+    font-size: 16px;
+    margin: 0 0 8px 0;
+    font-weight: 500;
+}
+
+/* 區塊標題樣式 */
+.section-header {
+    margin-bottom: 12px;
+}
+
+.section-header .item-details {
+    margin-top: 8px;
+}
+
+/* 直供子項樣式 */
+.sub-item-card.direct-supplier {
+    background: white;
+    border-left: 4px solid #4caf50;
+    margin-bottom: 8px;
+    padding: 12px;
+    border-radius: 4px;
+}
+
+/* 直供子項特殊欄位樣式 */
+.update-time {
+    font-size: 11px;
+    color: rgba(0,0,0,.54);
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+}
+
+.spoilage-rate {
+    font-size: 12px;
+    font-weight: 500;
+    color: #f44336;
+    background: #ffebee;
+    padding: 3px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+}
+
+.cost-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: #2e7d32;
+    background: #e8f5e8;
+    padding: 3px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+}
+
+.cost-with-spoilage-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: #d84315;
+    background: #fff3e0;
+    padding: 3px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+}
+
+/* 拍買位置切換按鈕樣式 */
+.auction-location-toggle {
+    font-size: 11px !important;
+    padding: 4px 8px !important;
+    min-width: 60px !important;
+    height: 28px !important;
+}
+
+/* 調整橫向布局中的按鈕欄位 */
+.card-row-horizontal .card-field:last-child {
+    min-width: 80px;
+    flex: 0 0 80px;
+}
+
+/* 區塊間距調整 */
+.basic-info-section + .today-shortage-section {
+    border-top: 2px solid #e3f2fd;
+}
+
+.today-shortage-section + .future-shortage-section {
+    border-top: 2px solid #fff3e0;
+}

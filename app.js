@@ -91,37 +91,37 @@ function renderCategorySection(container, category, items) {
     container.appendChild(categoryContent);
 }
 
-// 創建項目卡片 (將原本的卡片創建邏輯提取出來)
+// 創建項目卡片 (重構為三區塊結構)
 function createItemCard(item) {
     const card = document.createElement('div');
     card.className = `mdl-card mdl-shadow--2dp item-card ${item.active ? '' : 'inactive'} ${item.todayShortage > 0 ? 'highlight' : ''}`;
     
-    // 第一層：主要品項和數據
     const cardContent = document.createElement('div');
     cardContent.className = 'mdl-card__supporting-text';
     
-    // 上半部：主要資訊
-    const mainInfo = document.createElement('div');
-    mainInfo.className = 'main-info';
-    mainInfo.innerHTML = `
+    // 第一區塊：基本資訊區
+    const basicInfoSection = createBasicInfoSection(item);
+    cardContent.appendChild(basicInfoSection);
+    
+    // 第二區塊：今日缺口區
+    const todayShortageSection = createTodayShortageSection(item);
+    cardContent.appendChild(todayShortageSection);
+    
+    // 第三區塊：未來缺口區
+    const futureShortageSection = createFutureShortageSection(item);
+    cardContent.appendChild(futureShortageSection);
+    
+    card.appendChild(cardContent);
+    return card;
+}
+
+// 創建基本資訊區
+function createBasicInfoSection(item) {
+    const section = document.createElement('div');
+    section.className = 'basic-info-section';
+    section.innerHTML = `
         <h2 class="mdl-card__title-text">${item.name}</h2>
         <div class="item-details">
-            <div class="detail-item">
-                <span class="detail-label">今日缺量</span>
-                <span class="detail-value ${item.todayShortage > 0 ? 'emphasis' : ''}">${item.todayShortage}</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label">三日缺量</span>
-                <span class="detail-value">${item.threeDayShortage}</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label">今日需求</span>
-                <span class="detail-value">${item.todayDemand}</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label">總庫存</span>
-                <span class="detail-value">${item.totalStock}</span>
-            </div>
             <div class="detail-item">
                 <span class="detail-label tooltip">
                     現有庫存
@@ -146,31 +146,98 @@ function createItemCard(item) {
             </div>
         </div>
     `;
-    cardContent.appendChild(mainInfo);
+    return section;
+}
 
-    // 下半部：子項卡片
+// 創建今日缺口區
+function createTodayShortageSection(item) {
+    const section = document.createElement('div');
+    section.className = 'today-shortage-section';
+    
+    // 標題和數據
+    const sectionHeader = document.createElement('div');
+    sectionHeader.className = 'section-header';
+    sectionHeader.innerHTML = `
+        <h3 class="section-title">今日缺口</h3>
+        <div class="item-details">
+            <div class="detail-item">
+                <span class="detail-label">今日缺量</span>
+                <span class="detail-value ${item.todayShortage > 0 ? 'emphasis' : ''}">${item.todayShortage}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">今日需求</span>
+                <span class="detail-value">${item.todayDemand}</span>
+            </div>
+        </div>
+    `;
+    section.appendChild(sectionHeader);
+    
+    // 子項容器
     if (item.active) {
         const subItemsContainer = document.createElement('div');
         subItemsContainer.className = 'sub-items-container';
         
-        if (item.mode === 'auction' || item.mode === 'dual') {
+        // 顯示位置在今日的拍買子項
+        if ((item.mode === 'auction' || item.mode === 'dual') && item.auctionLocation === 'today') {
             subItemsContainer.appendChild(createAuctionRow(item));
         }
+        // 顯示採買子項
         if (item.mode === 'purchase' || item.mode === 'dual') {
             subItemsContainer.appendChild(createPurchaseRow(item));
         }
         
-        cardContent.appendChild(subItemsContainer);
+        section.appendChild(subItemsContainer);
     }
-
-    // 第二層：按鈕群 (移到子項下面)
+    
+    // 操作按鈕群
     const buttonSection = document.createElement('div');
     buttonSection.className = 'button-section';
     buttonSection.innerHTML = renderButtons(item);
-    cardContent.appendChild(buttonSection);
+    section.appendChild(buttonSection);
+    
+    return section;
+}
 
-    card.appendChild(cardContent);
-    return card;
+// 創建未來缺口區
+function createFutureShortageSection(item) {
+    const section = document.createElement('div');
+    section.className = 'future-shortage-section';
+    
+    // 標題和數據
+    const sectionHeader = document.createElement('div');
+    sectionHeader.className = 'section-header';
+    sectionHeader.innerHTML = `
+        <h3 class="section-title">未來缺口</h3>
+        <div class="item-details">
+            <div class="detail-item">
+                <span class="detail-label">三日缺量</span>
+                <span class="detail-value">${item.threeDayShortage}</span>
+            </div>
+        </div>
+    `;
+    section.appendChild(sectionHeader);
+    
+    // 子項容器
+    if (item.active) {
+        const subItemsContainer = document.createElement('div');
+        subItemsContainer.className = 'sub-items-container';
+        
+        // 顯示位置在未來的拍買子項
+        if ((item.mode === 'auction' || item.mode === 'dual') && item.auctionLocation === 'future') {
+            subItemsContainer.appendChild(createAuctionRow(item));
+        }
+        
+        // 顯示所有直供子項
+        if (item.directSuppliers && item.directSuppliers.length > 0) {
+            item.directSuppliers.forEach(supplier => {
+                subItemsContainer.appendChild(createDirectSupplierRow(item, supplier));
+            });
+        }
+        
+        section.appendChild(subItemsContainer);
+    }
+    
+    return section;
 }
 
 // 獲取類別樣式類別
@@ -259,6 +326,13 @@ function createAuctionRow(item) {
                 <span class="field-label">價格</span>
                 <span class="price-text">$${item.auctionPrice || 0}</span>
             </div>
+            <div class="card-field">
+                <span class="field-label">位置</span>
+                <button class="mdl-button mdl-js-button mdl-button--primary auction-location-toggle" 
+                        onclick="toggleAuctionLocation(${item.id})">
+                    ${item.auctionLocation === 'today' ? '移到未來' : '移到今日'}
+                </button>
+            </div>
         </div>
     `;
     return div;
@@ -294,6 +368,50 @@ function createPurchaseRow(item) {
             <div class="card-field">
                 <span class="field-label">價格</span>
                 <span class="price-text">$${item.purchasePrice || 0}</span>
+            </div>
+        </div>
+    `;
+    return div;
+}
+
+// 創建直供子項
+function createDirectSupplierRow(item, supplier) {
+    const div = document.createElement('div');
+    div.className = 'sub-item-card direct-supplier mdl-shadow--2dp';
+    div.innerHTML = `
+        <div class="card-row-horizontal">
+            <div class="card-field">
+                <span class="field-label">供應商</span>
+                <span class="mdl-chip">
+                    <span class="mdl-chip__text">${supplier.supplierName}</span>
+                </span>
+            </div>
+            <div class="card-field">
+                <span class="field-label">報價更新</span>
+                <span class="update-time">${supplier.priceUpdateTime}</span>
+            </div>
+            <div class="card-field">
+                <span class="field-label">單位</span>
+                <span class="unit-text">${supplier.unit}</span>
+            </div>
+            <div class="card-field">
+                <span class="field-label">腐損率</span>
+                <span class="spoilage-rate">${supplier.spoilageRate}%</span>
+            </div>
+            <div class="card-field">
+                <span class="field-label">採購量</span>
+                <div class="mdl-textfield mdl-js-textfield">
+                    <input type="number" class="mdl-textfield__input" value="${supplier.purchaseAmount}" 
+                           onchange="updateDirectPurchaseAmount(${item.id}, '${supplier.supplierName}', this.value)">
+                </div>
+            </div>
+            <div class="card-field">
+                <span class="field-label">成本</span>
+                <span class="cost-text">$${supplier.cost}</span>
+            </div>
+            <div class="card-field">
+                <span class="field-label">含腐損成本</span>
+                <span class="cost-with-spoilage-text">$${supplier.costWithSpoilage}</span>
             </div>
         </div>
     `;
@@ -421,6 +539,38 @@ function updateSupplier(itemId, value) {
         ...currentItems[itemIndex],
         supplier: value
     };
+}
+
+// 切換拍買位置
+function toggleAuctionLocation(itemId) {
+    const itemIndex = currentItems.findIndex(i => i.id === itemId);
+    if (itemIndex === -1) return;
+
+    const currentLocation = currentItems[itemIndex].auctionLocation;
+    const newLocation = currentLocation === 'today' ? 'future' : 'today';
+    
+    currentItems[itemIndex] = {
+        ...currentItems[itemIndex],
+        auctionLocation: newLocation
+    };
+    renderTable();
+}
+
+// 更新直供採購量
+function updateDirectPurchaseAmount(itemId, supplierName, value) {
+    const itemIndex = currentItems.findIndex(i => i.id === itemId);
+    if (itemIndex === -1) return;
+
+    const item = {...currentItems[itemIndex]};
+    const supplierIndex = item.directSuppliers.findIndex(s => s.supplierName === supplierName);
+    if (supplierIndex === -1) return;
+
+    item.directSuppliers[supplierIndex] = {
+        ...item.directSuppliers[supplierIndex],
+        purchaseAmount: parseInt(value) || 0
+    };
+    
+    currentItems[itemIndex] = item;
 }
 
 // 複製資訊
