@@ -22,31 +22,52 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTable();
 });
 
-// 渲染卡片
-function renderTable() {
-    const container = document.getElementById('itemsContainer');
+// ====== 通用 DOM 操作函數 ======
+
+// 清空並獲取容器
+function getAndClearContainer(containerId) {
+    const container = document.getElementById(containerId);
     container.innerHTML = '';
+    return container;
+}
 
-    const filteredItems = getFilteredItems();
-    
-    // 如果選擇了特定類別，直接顯示該類別的項目
-    if (currentCategoryFilter !== 'all') {
-        renderCategorySection(container, currentCategoryFilter, filteredItems);
-    } else {
-        // 顯示所有類別，按分類分組
-        const categorizedItems = groupItemsByCategory(filteredItems);
-        categories.forEach(category => {
-            const categoryItems = categorizedItems[category] || [];
-            if (categoryItems.length > 0) {
-                renderCategorySection(container, category, categoryItems);
-            }
-        });
-    }
-
-    // 確保新增的 MDL 元件被正確初始化
+// 升級 MDL 組件
+function upgradeMDLComponents() {
     if (typeof componentHandler !== 'undefined') {
         componentHandler.upgradeAllRegistered();
     }
+}
+
+// 創建並添加元素到容器
+function appendElementToContainer(container, element) {
+    container.appendChild(element);
+    return element;
+}
+
+// 渲染卡片
+function renderTable() {
+    const container = getAndClearContainer('itemsContainer');
+    const filteredItems = getFilteredItems();
+    
+    // 根據類別篩選決定渲染方式
+    if (currentCategoryFilter !== 'all') {
+        renderCategorySection(container, currentCategoryFilter, filteredItems);
+    } else {
+        renderAllCategories(container, filteredItems);
+    }
+
+    upgradeMDLComponents();
+}
+
+// 渲染所有類別
+function renderAllCategories(container, filteredItems) {
+    const categorizedItems = groupItemsByCategory(filteredItems);
+    categories.forEach(category => {
+        const categoryItems = categorizedItems[category] || [];
+        if (categoryItems.length > 0) {
+            renderCategorySection(container, category, categoryItems);
+        }
+    });
 }
 
 // 將項目按類別分組
@@ -116,41 +137,119 @@ function createItemCard(item) {
     return card;
 }
 
+// ====== HTML 模板創建函數 ======
+
+// 創建庫存項目模板
+function createStockItemTemplate(label, value, details, detailFormatter) {
+    const tooltipContent = details.map(detailFormatter).join('<br>');
+    return `
+        <div class="stock-item">
+            <span class="stock-label tooltip">
+                ${label}
+                <span class="tooltip-content">
+                    ${tooltipContent}
+                </span>
+            </span>
+            <span class="stock-value">${value}</span>
+        </div>
+    `;
+}
+
+// 創建基本資訊行模板
+function createBasicInfoRowTemplate(item) {
+    const inStockTemplate = createStockItemTemplate(
+        '現有庫存', 
+        item.inStock.amount, 
+        item.inStock.details,
+        d => `批號${d.batch}：${d.amount}（${d.date}）`
+    );
+    
+    const inTransitTemplate = createStockItemTemplate(
+        '在途庫存', 
+        item.inTransit.amount, 
+        item.inTransit.details,
+        d => `供應商${d.supplier}：${d.amount}（${d.date}）`
+    );
+    
+    return `
+        <div class="basic-info-row">
+            <h2 class="mdl-card__title-text">${item.name}</h2>
+            <div class="basic-info-stocks">
+                ${inStockTemplate}
+                ${inTransitTemplate}
+            </div>
+        </div>
+    `;
+}
+
 // 創建基本資訊區
 function createBasicInfoSection(item) {
     const section = document.createElement('div');
     section.className = 'basic-info-section';
-    section.innerHTML = `
-        <div class="basic-info-row">
-            <h2 class="mdl-card__title-text">${item.name}</h2>
-            <div class="basic-info-stocks">
-                <div class="stock-item">
-                    <span class="stock-label tooltip">
-                        現有庫存
-                        <span class="tooltip-content">
-                            ${item.inStock.details.map(d => 
-                                `批號${d.batch}：${d.amount}（${d.date}）`
-                            ).join('<br>')}
-                        </span>
-                    </span>
-                    <span class="stock-value">${item.inStock.amount}</span>
-                </div>
-                <div class="stock-item">
-                    <span class="stock-label tooltip">
-                        在途庫存
-                        <span class="tooltip-content">
-                            ${item.inTransit.details.map(d => 
-                                `供應商${d.supplier}：${d.amount}（${d.date}）`
-                            ).join('<br>')}
-                        </span>
-                    </span>
-                    <span class="stock-value">${item.inTransit.amount}</span>
-                </div>
+    section.innerHTML = createBasicInfoRowTemplate(item);
+    return section;
+}
+
+// ====== 通用區塊創建函數 ======
+
+// 創建區塊標題行
+function createSectionTitleRow(title, dataItems, buttons = '') {
+    return `
+        <div class="section-title-row">
+            <h3 class="section-title">${title}</h3>
+            <div class="section-data-items">
+                ${dataItems}
             </div>
+            ${buttons ? `<div class="button-section">${buttons}</div>` : ''}
         </div>
     `;
+}
+
+// 創建數據項目
+function createDataItem(label, value, emphasize = false) {
+    return `
+        <div class="section-data-item">
+            <span class="data-label">${label}</span>
+            <span class="data-value ${emphasize ? 'emphasis' : ''}">${value}</span>
+        </div>
+    `;
+}
+
+// 創建區塊標題
+function createSectionHeader(className, content) {
+    const header = document.createElement('div');
+    header.className = className;
+    header.innerHTML = content;
+    return header;
+}
+
+// 創建子項容器
+function createSubItemsContainer(item, locationFilter = null) {
+    if (!item.active) return null;
     
-    return section;
+    const container = document.createElement('div');
+    container.className = 'sub-items-container';
+    
+    // 添加拍買子項
+    if ((item.mode === 'auction' || item.mode === 'dual')) {
+        if (!locationFilter || item.auctionLocation === locationFilter) {
+            container.appendChild(createAuctionRow(item));
+        }
+    }
+    
+    // 添加採買子項（僅今日）
+    if ((item.mode === 'purchase' || item.mode === 'dual') && locationFilter === 'today') {
+        container.appendChild(createPurchaseRow(item));
+    }
+    
+    // 添加直供子項（僅未來）
+    if (locationFilter === 'future' && item.directSuppliers && item.directSuppliers.length > 0) {
+        item.directSuppliers.forEach(supplier => {
+            container.appendChild(createDirectSupplierRow(item, supplier));
+        });
+    }
+    
+    return container.children.length > 0 ? container : null;
 }
 
 // 創建今日缺口區
@@ -158,43 +257,20 @@ function createTodayShortageSection(item) {
     const section = document.createElement('div');
     section.className = 'today-shortage-section';
     
-    // 標題和數據
-    const sectionHeader = document.createElement('div');
-    sectionHeader.className = 'section-header';
-    sectionHeader.innerHTML = `
-        <div class="section-title-row">
-            <h3 class="section-title">今日缺口</h3>
-            <div class="section-data-items">
-                <div class="section-data-item">
-                    <span class="data-label">今日缺量</span>
-                    <span class="data-value ${item.todayShortage > 0 ? 'emphasis' : ''}">${item.todayShortage}</span>
-                </div>
-                <div class="section-data-item">
-                    <span class="data-label">今日需求</span>
-                    <span class="data-value">${item.todayDemand}</span>
-                </div>
-            </div>
-            <div class="button-section">
-                ${renderButtons(item)}
-            </div>
-        </div>
-    `;
+    // 組裝數據項目
+    const dataItems = [
+        createDataItem('今日缺量', item.todayShortage, item.todayShortage > 0),
+        createDataItem('今日需求', item.todayDemand)
+    ].join('');
+    
+    // 創建標題行
+    const titleRowContent = createSectionTitleRow('今日缺口', dataItems, renderButtons(item));
+    const sectionHeader = createSectionHeader('section-header', titleRowContent);
     section.appendChild(sectionHeader);
     
-    // 子項容器
-    if (item.active) {
-        const subItemsContainer = document.createElement('div');
-        subItemsContainer.className = 'sub-items-container';
-        
-        // 顯示位置在今日的拍買子項
-        if ((item.mode === 'auction' || item.mode === 'dual') && item.auctionLocation === 'today') {
-            subItemsContainer.appendChild(createAuctionRow(item));
-        }
-        // 顯示採買子項
-        if (item.mode === 'purchase' || item.mode === 'dual') {
-            subItemsContainer.appendChild(createPurchaseRow(item));
-        }
-        
+    // 添加子項容器
+    const subItemsContainer = createSubItemsContainer(item, 'today');
+    if (subItemsContainer) {
         section.appendChild(subItemsContainer);
     }
     
@@ -206,39 +282,17 @@ function createFutureShortageSection(item) {
     const section = document.createElement('div');
     section.className = 'future-shortage-section';
     
-    // 標題和數據
-    const sectionHeader = document.createElement('div');
-    sectionHeader.className = 'section-header';
-    sectionHeader.innerHTML = `
-        <div class="section-title-row">
-            <h3 class="section-title">未來缺口</h3>
-            <div class="section-data-items">
-                <div class="section-data-item">
-                    <span class="data-label">三日缺量</span>
-                    <span class="data-value">${item.threeDayShortage}</span>
-                </div>
-            </div>
-        </div>
-    `;
+    // 組裝數據項目
+    const dataItems = createDataItem('三日缺量', item.threeDayShortage);
+    
+    // 創建標題行
+    const titleRowContent = createSectionTitleRow('未來缺口', dataItems);
+    const sectionHeader = createSectionHeader('section-header', titleRowContent);
     section.appendChild(sectionHeader);
     
-    // 子項容器
-    if (item.active) {
-        const subItemsContainer = document.createElement('div');
-        subItemsContainer.className = 'sub-items-container';
-        
-        // 顯示位置在未來的拍買子項
-        if ((item.mode === 'auction' || item.mode === 'dual') && item.auctionLocation === 'future') {
-            subItemsContainer.appendChild(createAuctionRow(item));
-        }
-        
-        // 顯示所有直供子項
-        if (item.directSuppliers && item.directSuppliers.length > 0) {
-            item.directSuppliers.forEach(supplier => {
-                subItemsContainer.appendChild(createDirectSupplierRow(item, supplier));
-            });
-        }
-        
+    // 添加子項容器
+    const subItemsContainer = createSubItemsContainer(item, 'future');
+    if (subItemsContainer) {
         section.appendChild(subItemsContainer);
     }
     
@@ -267,40 +321,70 @@ function getCategoryIcon(category) {
 
 
 // 渲染固定位置按鈕
-function renderButtons(item) {
-    // 建立四個固定位置的按鈕位置
-    let buttons = {
+// ====== 按鈕渲染相關函數 ======
+
+// 創建按鈕 HTML
+function createButton(text, onClick, cssClasses = 'mdl-button mdl-js-button mdl-button--raised') {
+    return `<button class="${cssClasses}" onclick="${onClick}">${text}</button>`;
+}
+
+// 創建按鈕佔位符
+function createButtonPlaceholder() {
+    return '<div class="button-placeholder"></div>';
+}
+
+// 獲取模式轉換按鈕
+function getModeButtons(item) {
+    const buttons = {
         toAuction: '',
         toPurchase: '',
-        toPartial: '',
-        activeToggle: ''
+        toPartial: ''
     };
-
-    if (!item.active) {
-        buttons.activeToggle = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" onclick="setActive(${item.id})">Active</button>`;
-    } else {
-        // 根據模式設置適當的按鈕
-        switch (item.mode) {
-            case 'auction':
-                buttons.toPurchase = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary purchase" onclick="switchMode(${item.id}, 'purchase')">轉採買</button>`;
-                buttons.toPartial = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary dual" onclick="switchMode(${item.id}, 'dual')">部分採買</button>`;
-                break;
-            case 'purchase':
-                buttons.toAuction = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary auction" onclick="switchMode(${item.id}, 'auction')">轉拍買</button>`;
-                break;
-            case 'dual':
-                buttons.toPurchase = `<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary purchase" onclick="switchMode(${item.id}, 'purchase')">轉採買</button>`;
-                break;
-        }
-        buttons.activeToggle = `<button class="mdl-button mdl-js-button mdl-button--raised" onclick="setInactive(${item.id})">Inactive</button>`;
+    
+    switch (item.mode) {
+        case 'auction':
+            buttons.toPurchase = createButton('轉採買', `switchMode(${item.id}, 'purchase')`, 'mdl-button mdl-js-button mdl-button--raised mdl-button--primary purchase');
+            buttons.toPartial = createButton('部分採買', `switchMode(${item.id}, 'dual')`, 'mdl-button mdl-js-button mdl-button--raised mdl-button--primary dual');
+            break;
+        case 'purchase':
+            buttons.toAuction = createButton('轉拍買', `switchMode(${item.id}, 'auction')`, 'mdl-button mdl-js-button mdl-button--raised mdl-button--primary auction');
+            break;
+        case 'dual':
+            buttons.toPurchase = createButton('轉採買', `switchMode(${item.id}, 'purchase')`, 'mdl-button mdl-js-button mdl-button--raised mdl-button--primary purchase');
+            break;
     }
+    
+    return buttons;
+}
 
-    // 返回所有按鈕，即使是空的位置也保留
+// 獲取狀態切換按鈕
+function getActiveToggleButton(item) {
+    if (!item.active) {
+        return createButton('Active', `setActive(${item.id})`, 'mdl-button mdl-js-button mdl-button--raised mdl-button--colored');
+    } else {
+        return createButton('Inactive', `setInactive(${item.id})`, 'mdl-button mdl-js-button mdl-button--raised');
+    }
+}
+
+// 主按鈕渲染函數
+function renderButtons(item) {
+    if (!item.active) {
+        return `
+            ${createButtonPlaceholder()}
+            ${createButtonPlaceholder()}
+            ${createButtonPlaceholder()}
+            ${getActiveToggleButton(item)}
+        `;
+    }
+    
+    const modeButtons = getModeButtons(item);
+    const activeButton = getActiveToggleButton(item);
+    
     return `
-        ${buttons.toAuction || '<div class="button-placeholder"></div>'}
-        ${buttons.toPurchase || '<div class="button-placeholder"></div>'}
-        ${buttons.toPartial || '<div class="button-placeholder"></div>'}
-        ${buttons.activeToggle}
+        ${modeButtons.toAuction || createButtonPlaceholder()}
+        ${modeButtons.toPurchase || createButtonPlaceholder()}
+        ${modeButtons.toPartial || createButtonPlaceholder()}
+        ${activeButton}
     `;
 }
 
@@ -602,64 +686,67 @@ function copyPurchaseInfo() {
         .catch(() => alert('複製失敗'));
 }
 
-// 篩選功能
-function getFilteredItems() {
-    let filteredItems = currentItems;
-    
-    // 第一層：按採購方式篩選
-    switch(currentFilter) {
+// ====== 篩選功能相關函數 ======
+
+// 採購方式篩選器
+function filterByMode(items, mode) {
+    switch(mode) {
         case 'auction':
-            filteredItems = filteredItems.filter(item => 
+            return items.filter(item => 
                 item.active && 
                 (item.mode === 'auction' || item.mode === 'dual') && 
                 item.auctionAmount > 0
             );
-            break;
         case 'purchase':
-            filteredItems = filteredItems.filter(item => 
+            return items.filter(item => 
                 item.active && 
                 (item.mode === 'purchase' || item.mode === 'dual') && 
                 item.purchaseAmount > 0
             );
-            break;
         case 'direct':
-            filteredItems = filteredItems.filter(item => 
+            return items.filter(item => 
                 item.active && 
                 item.directSuppliers && 
                 item.directSuppliers.some(supplier => supplier.purchaseAmount > 0)
             );
-            break;
         default:
-            // 'all' - 不篩選
-            break;
+            return items;
     }
-    
-    // 第二層：按類別篩選
-    if (currentCategoryFilter !== 'all') {
-        filteredItems = filteredItems.filter(item => item.category === currentCategoryFilter);
-    }
-    
-    // 第三層：按缺口狀態篩選
-    switch(currentShortageFilter) {
+}
+
+// 類別篩選器
+function filterByCategory(items, category) {
+    return category === 'all' ? items : items.filter(item => item.category === category);
+}
+
+// 缺口狀態篩選器
+function filterByShortage(items, shortageType) {
+    switch(shortageType) {
         case 'today':
-            filteredItems = filteredItems.filter(item => item.todayShortage > 0);
-            break;
+            return items.filter(item => item.todayShortage > 0);
         case 'any':
-            filteredItems = filteredItems.filter(item => 
+            return items.filter(item => 
                 item.todayShortage > 0 || item.threeDayShortage > 0
             );
-            break;
         case 'none':
-            filteredItems = filteredItems.filter(item => 
+            return items.filter(item => 
                 item.todayShortage === 0 && item.threeDayShortage === 0
             );
-            break;
         default:
-            // 'all' - 不篩選
-            break;
+            return items;
     }
+}
+
+// 主篩選函數
+function getFilteredItems() {
+    let result = currentItems;
     
-    return filteredItems;
+    // 應用三層篩選
+    result = filterByMode(result, currentFilter);
+    result = filterByCategory(result, currentCategoryFilter);
+    result = filterByShortage(result, currentShortageFilter);
+    
+    return result;
 }
 
 // 下拉選單事件處理函數
