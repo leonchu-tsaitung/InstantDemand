@@ -160,11 +160,13 @@ body {
     flex: 1;
 }
 
+/* 統一所有子項的標籤樣式 */
 .field-label {
     font-size: 12px;
     font-weight: 500;
     color: rgba(0,0,0,.6);
     margin-bottom: 2px;
+    line-height: 1.2;
 }
 
 /* 保留舊樣式以防有其他地方使用 */
@@ -532,41 +534,86 @@ tr.inactive {
     visibility: visible;
 }
 
-/* 輸入框樣式 */
+/* 統一所有輸入框和選擇框樣式 */
 .mdl-textfield {
-    width: 100px;
-    margin: 0 8px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 .mdl-textfield__input {
-    text-align: right;
+    text-align: center;
+    font-size: 12px;
+    padding: 4px;
+    height: 24px;
+    border-radius: 3px;
+    border: 1px solid rgba(0,0,0,.12);
 }
 
 .mdl-selectfield {
-    width: 150px;
-    margin: 0 8px;
+    width: 100%;
+    margin: 0;
 }
 
-/* 單位和價格文字樣式 */
-.unit-text {
+.mdl-selectfield__select {
+    width: 100%;
     font-size: 12px;
+    padding: 4px 6px;
+    height: 26px;
+    border: 1px solid rgba(0,0,0,.12);
+    border-radius: 3px;
+    background-color: white;
+    color: rgba(0,0,0,.87);
+}
+
+/* 統一所有數據文字樣式 */
+.unit-text,
+.price-text,
+.cost-text,
+.cost-with-spoilage-text,
+.spoilage-rate,
+.update-time {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 3px 6px;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    line-height: 1.3;
+}
+
+/* 各種數據文字的顏色區分 */
+.unit-text {
     color: rgba(0,0,0,.7);
     background: #f0f8ff;
-    padding: 3px 6px;
-    border-radius: 3px;
-    border: 1px solid #e0e7ff;
-    white-space: nowrap;
+    border-color: #e0e7ff;
 }
 
-.price-text {
-    font-size: 13px;
-    font-weight: 500;
+.price-text,
+.cost-text {
     color: #2e7d32;
     background: #e8f5e8;
-    padding: 3px 6px;
-    border-radius: 3px;
-    border: 1px solid #c8e6c9;
-    white-space: nowrap;
+    border-color: #c8e6c9;
+}
+
+.cost-with-spoilage-text {
+    color: #d84315;
+    background: #fff3e0;
+    border-color: #ffccbc;
+}
+
+.spoilage-rate {
+    color: #f44336;
+    background: #ffebee;
+    border-color: #ffcdd2;
+}
+
+.update-time {
+    color: rgba(0,0,0,.54);
+    background: #f5f5f5;
+    border-color: #e0e0e0;
+    font-size: 10px;
+    font-weight: 400;
 }
 
 /* 對話框樣式 */
@@ -628,12 +675,48 @@ dialog::backdrop {
     background: white;
 }
 
+.basic-info-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
 .basic-info-section .mdl-card__title-text {
     color: #3f51b5;
     font-size: 18px;
-    margin: 0 0 12px 0;
+    margin: 0;
     min-width: 120px;
     flex-shrink: 0;
+}
+
+.basic-info-stocks {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.stock-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+
+.stock-label {
+    font-size: 12px;
+    color: rgba(0,0,0,.6);
+    white-space: nowrap;
+}
+
+.stock-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(0,0,0,.87);
+    min-width: 20px;
 }
 
 /* 今日缺口區 */
@@ -668,8 +751,45 @@ dialog::backdrop {
     margin-bottom: 12px;
 }
 
-.section-header .item-details {
-    margin-top: 8px;
+.section-title-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.section-data-items {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.section-data-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background: rgba(255,255,255,.7);
+    border-radius: 4px;
+    border: 1px solid rgba(0,0,0,.1);
+}
+
+.data-label {
+    font-size: 12px;
+    color: rgba(0,0,0,.6);
+    white-space: nowrap;
+}
+
+.data-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(0,0,0,.87);
+    min-width: 20px;
+}
+
+.data-value.emphasis {
+    color: #f44336;
+    font-weight: 600;
 }
 
 /* 直供子項樣式 */
@@ -681,58 +801,146 @@ dialog::backdrop {
     border-radius: 4px;
 }
 
-/* 直供子項特殊欄位樣式 */
-.update-time {
-    font-size: 11px;
-    color: rgba(0,0,0,.54);
-    background: #f5f5f5;
-    padding: 2px 6px;
-    border-radius: 3px;
-    white-space: nowrap;
+
+/* 拍買子項單行布局 */
+.auction-single-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    flex-wrap: nowrap;
 }
 
-.spoilage-rate {
-    font-size: 12px;
-    font-weight: 500;
-    color: #f44336;
-    background: #ffebee;
-    padding: 3px 6px;
-    border-radius: 3px;
-    white-space: nowrap;
+/* 拍買欄位寬度控制 - 給予適當寬度 */
+.auction-amount-field {
+    flex: 0 0 90px;
+    min-width: 90px;
 }
 
-.cost-text {
-    font-size: 13px;
-    font-weight: 500;
-    color: #2e7d32;
-    background: #e8f5e8;
-    padding: 3px 6px;
-    border-radius: 3px;
-    white-space: nowrap;
+.auction-code-field {
+    flex: 0 0 120px;
+    min-width: 120px;
 }
 
-.cost-with-spoilage-text {
-    font-size: 13px;
-    font-weight: 500;
-    color: #d84315;
-    background: #fff3e0;
-    padding: 3px 6px;
-    border-radius: 3px;
-    white-space: nowrap;
+.auction-unit-field {
+    flex: 0 0 110px;
+    min-width: 110px;
 }
 
-/* 拍買位置切換按鈕樣式 */
+.auction-price-field {
+    flex: 0 0 80px;
+    min-width: 80px;
+}
+
+.auction-action-field {
+    flex: 0 0 130px;
+    min-width: 130px;
+}
+
+/* 拍買位置切換按鈕樣式 - 適當尺寸 */
 .auction-location-toggle {
     font-size: 11px !important;
-    padding: 4px 8px !important;
-    min-width: 60px !important;
-    height: 28px !important;
+    padding: 6px 8px !important;
+    min-width: 100px !important;
+    height: 32px !important;
+    background-color: #3f51b5 !important;
+    color: white !important;
+    border-radius: 4px !important;
+    border: none !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    white-space: nowrap !important;
+}
+
+.auction-location-toggle:hover {
+    background-color: #303f9f !important;
+}
+
+.auction-location-toggle .material-icons {
+    font-size: 14px !important;
+}
+
+/* 統一所有子項布局樣式 */
+.auction-single-row,
+.purchase-single-row,
+.direct-single-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
+.auction-single-row .card-field,
+.purchase-single-row .card-field,
+.direct-single-row .card-field {
+    flex-shrink: 0;
+}
+
+/* 採買子項欄位寬度控制 */
+.purchase-amount-field {
+    flex: 0 0 90px;
+    min-width: 90px;
+}
+
+.purchase-supplier-field {
+    flex: 0 0 120px;
+    min-width: 120px;
+}
+
+.purchase-unit-field {
+    flex: 0 0 110px;
+    min-width: 110px;
+}
+
+.purchase-price-field {
+    flex: 0 0 80px;
+    min-width: 80px;
+}
+
+/* 直供子項欄位寬度控制 */
+.direct-supplier-field {
+    flex: 0 0 100px;
+    min-width: 100px;
+}
+
+.direct-update-field {
+    flex: 0 0 120px;
+    min-width: 120px;
+}
+
+.direct-unit-field {
+    flex: 0 0 90px;
+    min-width: 90px;
+}
+
+.direct-spoilage-field {
+    flex: 0 0 70px;
+    min-width: 70px;
+}
+
+.direct-amount-field {
+    flex: 0 0 90px;
+    min-width: 90px;
+}
+
+.direct-cost-field {
+    flex: 0 0 70px;
+    min-width: 70px;
+}
+
+.direct-spoilage-cost-field {
+    flex: 0 0 90px;
+    min-width: 90px;
 }
 
 /* 調整橫向布局中的按鈕欄位 */
 .card-row-horizontal .card-field:last-child {
-    min-width: 80px;
-    flex: 0 0 80px;
+    min-width: 90px;
+    flex: 0 0 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* 區塊間距調整 */

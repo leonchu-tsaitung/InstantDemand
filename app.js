@@ -120,29 +120,31 @@ function createBasicInfoSection(item) {
     const section = document.createElement('div');
     section.className = 'basic-info-section';
     section.innerHTML = `
-        <h2 class="mdl-card__title-text">${item.name}</h2>
-        <div class="item-details">
-            <div class="detail-item">
-                <span class="detail-label tooltip">
-                    現有庫存
-                    <span class="tooltip-content">
-                        ${item.inStock.details.map(d => 
-                            `批號${d.batch}：${d.amount}（${d.date}）`
-                        ).join('<br>')}
+        <div class="basic-info-row">
+            <h2 class="mdl-card__title-text">${item.name}</h2>
+            <div class="basic-info-stocks">
+                <div class="stock-item">
+                    <span class="stock-label tooltip">
+                        現有庫存
+                        <span class="tooltip-content">
+                            ${item.inStock.details.map(d => 
+                                `批號${d.batch}：${d.amount}（${d.date}）`
+                            ).join('<br>')}
+                        </span>
                     </span>
-                </span>
-                <span class="detail-value">${item.inStock.amount}</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label tooltip">
-                    在途庫存
-                    <span class="tooltip-content">
-                        ${item.inTransit.details.map(d => 
-                            `供應商${d.supplier}：${d.amount}（${d.date}）`
-                        ).join('<br>')}
+                    <span class="stock-value">${item.inStock.amount}</span>
+                </div>
+                <div class="stock-item">
+                    <span class="stock-label tooltip">
+                        在途庫存
+                        <span class="tooltip-content">
+                            ${item.inTransit.details.map(d => 
+                                `供應商${d.supplier}：${d.amount}（${d.date}）`
+                            ).join('<br>')}
+                        </span>
                     </span>
-                </span>
-                <span class="detail-value">${item.inTransit.amount}</span>
+                    <span class="stock-value">${item.inTransit.amount}</span>
+                </div>
             </div>
         </div>
     `;
@@ -158,15 +160,17 @@ function createTodayShortageSection(item) {
     const sectionHeader = document.createElement('div');
     sectionHeader.className = 'section-header';
     sectionHeader.innerHTML = `
-        <h3 class="section-title">今日缺口</h3>
-        <div class="item-details">
-            <div class="detail-item">
-                <span class="detail-label">今日缺量</span>
-                <span class="detail-value ${item.todayShortage > 0 ? 'emphasis' : ''}">${item.todayShortage}</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label">今日需求</span>
-                <span class="detail-value">${item.todayDemand}</span>
+        <div class="section-title-row">
+            <h3 class="section-title">今日缺口</h3>
+            <div class="section-data-items">
+                <div class="section-data-item">
+                    <span class="data-label">今日缺量</span>
+                    <span class="data-value ${item.todayShortage > 0 ? 'emphasis' : ''}">${item.todayShortage}</span>
+                </div>
+                <div class="section-data-item">
+                    <span class="data-label">今日需求</span>
+                    <span class="data-value">${item.todayDemand}</span>
+                </div>
             </div>
         </div>
     `;
@@ -207,11 +211,13 @@ function createFutureShortageSection(item) {
     const sectionHeader = document.createElement('div');
     sectionHeader.className = 'section-header';
     sectionHeader.innerHTML = `
-        <h3 class="section-title">未來缺口</h3>
-        <div class="item-details">
-            <div class="detail-item">
-                <span class="detail-label">三日缺量</span>
-                <span class="detail-value">${item.threeDayShortage}</span>
+        <div class="section-title-row">
+            <h3 class="section-title">未來缺口</h3>
+            <div class="section-data-items">
+                <div class="section-data-item">
+                    <span class="data-label">三日缺量</span>
+                    <span class="data-value">${item.threeDayShortage}</span>
+                </div>
             </div>
         </div>
     `;
@@ -304,32 +310,33 @@ function createAuctionRow(item) {
     const div = document.createElement('div');
     div.className = 'sub-item-card auction mdl-shadow--2dp';
     div.innerHTML = `
-        <div class="card-row-horizontal">
-            <div class="card-field">
+        <div class="card-row-horizontal auction-single-row">
+            <div class="card-field auction-amount-field">
                 <span class="field-label">拍買量</span>
                 <div class="mdl-textfield mdl-js-textfield">
                     <input type="number" class="mdl-textfield__input" value="${item.auctionAmount}" 
                            onchange="updateAuctionAmount(${item.id}, this.value)">
                 </div>
             </div>
-            <div class="card-field">
+            <div class="card-field auction-code-field">
                 <span class="field-label">拍賣代碼</span>
                 <span class="mdl-chip">
                     <span class="mdl-chip__text">${item.auctionCode}</span>
                 </span>
             </div>
-            <div class="card-field">
+            <div class="card-field auction-unit-field">
                 <span class="field-label">單位</span>
                 <span class="unit-text">${item.unit || '包'}</span>
             </div>
-            <div class="card-field">
+            <div class="card-field auction-price-field">
                 <span class="field-label">價格</span>
                 <span class="price-text">$${item.auctionPrice || 0}</span>
             </div>
-            <div class="card-field">
+            <div class="card-field auction-action-field">
                 <span class="field-label">位置</span>
                 <button class="mdl-button mdl-js-button mdl-button--primary auction-location-toggle" 
                         onclick="toggleAuctionLocation(${item.id})">
+                    <i class="material-icons">swap_horiz</i>
                     ${item.auctionLocation === 'today' ? '移到未來' : '移到今日'}
                 </button>
             </div>
@@ -343,15 +350,15 @@ function createPurchaseRow(item) {
     const div = document.createElement('div');
     div.className = 'sub-item-card purchase mdl-shadow--2dp';
     div.innerHTML = `
-        <div class="card-row-horizontal">
-            <div class="card-field">
+        <div class="card-row-horizontal purchase-single-row">
+            <div class="card-field purchase-amount-field">
                 <span class="field-label">採買量</span>
                 <div class="mdl-textfield mdl-js-textfield">
                     <input type="number" class="mdl-textfield__input" value="${item.purchaseAmount}" 
                            onchange="updatePurchaseAmount(${item.id}, this.value)">
                 </div>
             </div>
-            <div class="card-field">
+            <div class="card-field purchase-supplier-field">
                 <span class="field-label">攤商</span>
                 <div class="mdl-selectfield">
                     <select class="mdl-selectfield__select" onchange="updateSupplier(${item.id}, this.value)">
@@ -361,11 +368,11 @@ function createPurchaseRow(item) {
                     </select>
                 </div>
             </div>
-            <div class="card-field">
+            <div class="card-field purchase-unit-field">
                 <span class="field-label">單位</span>
                 <span class="unit-text">${item.unit || '包'}</span>
             </div>
-            <div class="card-field">
+            <div class="card-field purchase-price-field">
                 <span class="field-label">價格</span>
                 <span class="price-text">$${item.purchasePrice || 0}</span>
             </div>
@@ -379,37 +386,37 @@ function createDirectSupplierRow(item, supplier) {
     const div = document.createElement('div');
     div.className = 'sub-item-card direct-supplier mdl-shadow--2dp';
     div.innerHTML = `
-        <div class="card-row-horizontal">
-            <div class="card-field">
+        <div class="card-row-horizontal direct-single-row">
+            <div class="card-field direct-supplier-field">
                 <span class="field-label">供應商</span>
                 <span class="mdl-chip">
                     <span class="mdl-chip__text">${supplier.supplierName}</span>
                 </span>
             </div>
-            <div class="card-field">
+            <div class="card-field direct-update-field">
                 <span class="field-label">報價更新</span>
                 <span class="update-time">${supplier.priceUpdateTime}</span>
             </div>
-            <div class="card-field">
+            <div class="card-field direct-unit-field">
                 <span class="field-label">單位</span>
                 <span class="unit-text">${supplier.unit}</span>
             </div>
-            <div class="card-field">
+            <div class="card-field direct-spoilage-field">
                 <span class="field-label">腐損率</span>
                 <span class="spoilage-rate">${supplier.spoilageRate}%</span>
             </div>
-            <div class="card-field">
+            <div class="card-field direct-amount-field">
                 <span class="field-label">採購量</span>
                 <div class="mdl-textfield mdl-js-textfield">
                     <input type="number" class="mdl-textfield__input" value="${supplier.purchaseAmount}" 
                            onchange="updateDirectPurchaseAmount(${item.id}, '${supplier.supplierName}', this.value)">
                 </div>
             </div>
-            <div class="card-field">
+            <div class="card-field direct-cost-field">
                 <span class="field-label">成本</span>
                 <span class="cost-text">$${supplier.cost}</span>
             </div>
-            <div class="card-field">
+            <div class="card-field direct-spoilage-cost-field">
                 <span class="field-label">含腐損成本</span>
                 <span class="cost-with-spoilage-text">$${supplier.costWithSpoilage}</span>
             </div>
