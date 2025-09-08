@@ -955,3 +955,146 @@ dialog::backdrop {
 .today-shortage-section + .future-shortage-section {
     border-top: 2px solid #fff3e0;
 }
+
+/* ====== 異動追蹤和儲存樣式 ====== */
+
+/* 未儲存狀態指示 */
+.item-card.has-unsaved-changes {
+    border-left: 4px solid #ff9800;
+    background-color: #fff8e1;
+}
+
+.item-title-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.unsaved-indicator {
+    color: #ff9800;
+    font-size: 14px;
+    animation: pulse 2s infinite;
+}
+
+.unsaved-indicator .material-icons {
+    font-size: 12px;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* 備註和儲存區樣式 */
+.save-section {
+    border-top: 2px solid #e8f5e8;
+    padding-top: 12px;
+    margin-top: 12px;
+}
+
+.save-section .section-title {
+    font-size: 14px;
+    color: #4caf50;
+    margin: 0 0 8px 0;
+}
+
+.note-and-save-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.note-input-container {
+    flex: 1;
+}
+
+.save-button-container {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+}
+
+/* 整合式備註輸入元件 */
+.integrated-note-input {
+    position: relative;
+    width: 100%;
+}
+
+.note-input-with-suggestions {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: white;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+}
+
+.note-input-with-suggestions:focus {
+    border-color: #4caf50;
+    outline: none;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.2);
+}
+
+.note-input-with-suggestions::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+/* 為datalist添加視覺提示 */
+.integrated-note-input::after {
+    content: '▼';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #666;
+    pointer-events: none;
+}
+
+/* 儲存按鈕樣式 */
+.save-button {
+    min-width: 80px !important;
+    background-color: #4caf50 !important;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.save-button .material-icons {
+    font-size: 18px;
+}
+
+.save-button:hover {
+    background-color: #45a049 !important;
+}
+
+.save-status-text {
+    color: #4caf50;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 12px;
+    background-color: #e8f5e8;
+    border-radius: 4px;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .note-and-save-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .save-button-container {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .note-input-with-suggestions {
+        font-size: 16px; /* 避免iOS縮放 */
+    }
+}

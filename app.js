@@ -19,6 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
             item.purchasePrice = item.auctionPrice + Math.floor(Math.random() * 5) + 2; // 比拍買價格高2-7元
         }
     });
+    
+    // 初始化異動追蹤
+    initializeItemTracking();
+    
     renderTable();
 });
 
@@ -116,7 +120,7 @@ function renderCategorySection(container, category, items) {
 // 創建項目卡片 (重構為三區塊結構)
 function createItemCard(item) {
     const card = document.createElement('div');
-    card.className = `mdl-card mdl-shadow--2dp item-card ${item.active ? '' : 'inactive'} ${item.todayShortage > 0 ? 'highlight' : ''}`;
+    card.className = `mdl-card mdl-shadow--2dp item-card ${item.active ? '' : 'inactive'} ${item.todayShortage > 0 ? 'highlight' : ''} ${item.hasUnsavedChanges ? 'has-unsaved-changes' : ''}`;
     
     const cardContent = document.createElement('div');
     cardContent.className = 'mdl-card__supporting-text';
@@ -132,6 +136,12 @@ function createItemCard(item) {
     // 第三區塊：未來缺口區
     const futureShortageSection = createFutureShortageSection(item);
     cardContent.appendChild(futureShortageSection);
+    
+    // 第四區塊：備註和儲存區
+    if (item.active) {
+        const saveSection = createSaveSection(item);
+        cardContent.appendChild(saveSection);
+    }
     
     card.appendChild(cardContent);
     return card;
@@ -171,9 +181,17 @@ function createBasicInfoRowTemplate(item) {
         d => `供應商${d.supplier}：${d.amount}（${d.date}）`
     );
     
+    const unsavedIndicator = item.hasUnsavedChanges ? 
+        `<span class="unsaved-indicator" title="有未儲存的異動">
+            <i class="material-icons">fiber_manual_record</i>
+        </span>` : '';
+    
     return `
         <div class="basic-info-row">
-            <h2 class="mdl-card__title-text">${item.name}</h2>
+            <div class="item-title-section">
+                <h2 class="mdl-card__title-text">${item.name}</h2>
+                ${unsavedIndicator}
+            </div>
             <div class="basic-info-stocks">
                 ${inStockTemplate}
                 ${inTransitTemplate}
@@ -297,6 +315,68 @@ function createFutureShortageSection(item) {
     }
     
     return section;
+}
+
+// 創建備註和儲存區
+function createSaveSection(item) {
+    const section = document.createElement('div');
+    section.className = 'save-section';
+    
+    const noteInputHTML = createNoteInputHTML(item);
+    const saveButtonHTML = createSaveButtonHTML(item);
+    
+    section.innerHTML = `
+        <div class="section-header">
+            <h3 class="section-title">備註與儲存</h3>
+        </div>
+        <div class="note-and-save-row">
+            <div class="note-input-container">
+                ${noteInputHTML}
+            </div>
+            <div class="save-button-container">
+                ${saveButtonHTML}
+            </div>
+        </div>
+    `;
+    
+    return section;
+}
+
+// 創建備註輸入HTML (真正整合式：同一框內既可選又可手打)
+function createNoteInputHTML(item) {
+    const noteValue = item.noteText || (item.noteCategory ? item.noteCategory : '');
+    const datalistOptions = noteCategories.map(category => 
+        `<option value="${category}"></option>`
+    ).join('');
+    
+    return `
+        <div class="integrated-note-input">
+            <input type="text" 
+                   class="note-input-with-suggestions" 
+                   list="noteOptions_${item.id}"
+                   placeholder="選擇異動原因或直接輸入說明..." 
+                   value="${noteValue}"
+                   oninput="updateItemNote(${item.id}, this.value)">
+            <datalist id="noteOptions_${item.id}">
+                ${datalistOptions}
+            </datalist>
+        </div>
+    `;
+}
+
+// 創建儲存按鈕HTML
+function createSaveButtonHTML(item) {
+    if (!item.hasUnsavedChanges) {
+        return '<span class="save-status-text">已儲存</span>';
+    }
+    
+    return `
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored save-button" 
+                onclick="saveItemChanges(${item.id})">
+            <i class="material-icons">save</i>
+            儲存
+        </button>
+    `;
 }
 
 // 獲取類別樣式類別
@@ -532,6 +612,7 @@ function switchMode(itemId, newMode) {
             break;
     }
 
+    item.hasUnsavedChanges = true;
     currentItems[itemIndex] = item;
     renderTable();
 }
@@ -607,8 +688,12 @@ function updateAuctionAmount(itemId, value) {
 
     currentItems[itemIndex] = {
         ...currentItems[itemIndex],
-        auctionAmount: parseInt(value) || 0
+        auctionAmount: parseInt(value) || 0,
+        hasUnsavedChanges: true
     };
+    
+    // 重新渲染以顯示未儲存狀態
+    renderTable();
 }
 
 function updatePurchaseAmount(itemId, value) {
@@ -617,8 +702,12 @@ function updatePurchaseAmount(itemId, value) {
 
     currentItems[itemIndex] = {
         ...currentItems[itemIndex],
-        purchaseAmount: parseInt(value) || 0
+        purchaseAmount: parseInt(value) || 0,
+        hasUnsavedChanges: true
     };
+    
+    // 重新渲染以顯示未儲存狀態
+    renderTable();
 }
 
 function updateSupplier(itemId, value) {
@@ -763,5 +852,114 @@ function onCategoryFilterChange(value) {
 function onShortageFilterChange(value) {
     currentShortageFilter = value;
     renderTable();
+}
+
+// ====== 異動追蹤和儲存相關函數 ======
+
+// 更新品項備註（整合類別和文字）
+function updateItemNote(itemId, value) {
+    const itemIndex = currentItems.findIndex(i => i.id === itemId);
+    if (itemIndex === -1) return;
+    
+    // 檢查是否為預設類別
+    const isPresetCategory = noteCategories.includes(value);
+    
+    currentItems[itemIndex] = {
+        ...currentItems[itemIndex],
+        noteCategory: isPresetCategory ? value : '',
+        noteText: value // 不管是選擇還是手打，都存在noteText中
+    };
+}
+
+// 檢查是否需要備註 (當前值與建議值不同)
+function requiresNote(item) {
+    const auctionDiff = Math.abs(item.auctionAmount - item.suggestedAmounts.auctionAmount);
+    const purchaseDiff = Math.abs(item.purchaseAmount - item.suggestedAmounts.purchaseAmount);
+    
+    return auctionDiff > 0 || purchaseDiff > 0;
+}
+
+// 驗證備註是否完整
+function validateNote(item) {
+    if (!requiresNote(item)) {
+        return { valid: true, message: '' };
+    }
+    
+    const hasNote = item.noteText && item.noteText.trim() !== '';
+    
+    if (!hasNote) {
+        return { 
+            valid: false, 
+            message: '當訂購量與建議值不同時，請填寫異動原因' 
+        };
+    }
+    
+    return { valid: true, message: '' };
+}
+
+// 儲存品項異動
+function saveItemChanges(itemId) {
+    const itemIndex = currentItems.findIndex(i => i.id === itemId);
+    if (itemIndex === -1) return;
+    
+    const item = currentItems[itemIndex];
+    
+    // 驗證備註
+    const validation = validateNote(item);
+    if (!validation.valid) {
+        alert(validation.message);
+        return;
+    }
+    
+    // 建立異動記錄
+    const changeRecord = {
+        timestamp: new Date().toISOString(),
+        auctionAmount: {
+            suggested: item.suggestedAmounts.auctionAmount,
+            actual: item.auctionAmount
+        },
+        purchaseAmount: {
+            suggested: item.suggestedAmounts.purchaseAmount,
+            actual: item.purchaseAmount
+        },
+        noteCategory: item.noteCategory,
+        noteText: item.noteText,
+        user: 'current_user'
+    };
+    
+    // 儲存到localStorage (可以擴展為其他儲存方式)
+    const savedChanges = JSON.parse(localStorage.getItem('demandSystemChanges') || '{}');
+    if (!savedChanges[itemId]) {
+        savedChanges[itemId] = [];
+    }
+    savedChanges[itemId].push(changeRecord);
+    localStorage.setItem('demandSystemChanges', JSON.stringify(savedChanges));
+    
+    // 更新品項狀態
+    currentItems[itemIndex] = {
+        ...item,
+        hasUnsavedChanges: false,
+        // 更新建議值為當前實際值，避免重複提醒
+        suggestedAmounts: {
+            auctionAmount: item.auctionAmount,
+            purchaseAmount: item.purchaseAmount
+        },
+        // 清空備註欄位
+        noteCategory: '',
+        noteText: ''
+    };
+    
+    // 重新渲染
+    renderTable();
+    
+    // 顯示成功訊息
+    showSaveSuccessMessage(item.name);
+}
+
+// 顯示儲存成功訊息
+function showSaveSuccessMessage(itemName) {
+    // 可以用更優雅的通知方式，這裡先用簡單的alert
+    // 未來可以實作toast notification
+    console.log(`${itemName} 已成功儲存`);
 }
 

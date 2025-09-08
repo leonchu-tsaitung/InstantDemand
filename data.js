@@ -32,6 +32,14 @@ const items = [
         purchaseAmount: 0,
         supplier: '攤商A',
         active: true,
+        // 異動追蹤欄位
+        hasUnsavedChanges: false,
+        noteCategory: '',
+        noteText: '',
+        suggestedAmounts: {
+            auctionAmount: 30,
+            purchaseAmount: 0
+        },
         directSuppliers: [
             {
                 supplierName: '直供商A',
@@ -1181,3 +1189,33 @@ const items = [
 const suppliers = ['攤商A', '攤商B', '攤商C'];
 
 const categories = ['葉菜類', '根莖類', '特殊菜類'];
+
+// 預設備註類別
+const noteCategories = [
+    '市場價格變動',
+    '供應商異動',
+    '庫存調整',
+    '需求預測修正',
+    '其他原因'
+];
+
+// 初始化異動追蹤欄位
+function initializeItemTracking() {
+    items.forEach(item => {
+        if (item.hasUnsavedChanges === undefined) {
+            item.hasUnsavedChanges = false;
+        }
+        if (item.noteCategory === undefined) {
+            item.noteCategory = '';
+        }
+        if (item.noteText === undefined) {
+            item.noteText = '';
+        }
+        if (!item.suggestedAmounts) {
+            item.suggestedAmounts = {
+                auctionAmount: item.auctionAmount || 0,
+                purchaseAmount: item.purchaseAmount || 0
+            };
+        }
+    });
+}
